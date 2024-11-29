@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk to AI Rohan</title>
+    <link rel="stylesheet" href="css/mic.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-bar">
+        <div class="name">
+            <a href="home.html" style="text-decoration: none;">
+                <span class="red">Rohan</span> <span class="black">AI Scientist</span>
+            </a>
+        </div>
+    <div class="menu">
+      <!-- Hamburger Menu -->
+      <div class="hamburger" id="hamburger">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </div>
+      <div class="dropdown" id="dropdown">
+        <a href="data/rohan_resume_single_column.pdf" class="dropdown-item">Resume</a>
+        <a href="mic.html" class="dropdown-item">AI Rohan</a>
+      </div>
+    </div>
+  </header>
+    <div class="container">
+        <h1>AI Rohan</h1>
+        <h3>talk to AI Rohan.</h3>
+        <button id="micButton" onclick="toggleRecording()">
+            <img src="data/mic.svg" alt="Mic Icon" id="micIcon">
+        </button>
+        <h3 id="status">idle...</h3>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="contact-info">
+          <!-- Phone -->
+          <div class="icon-container" tabindex="0">
+            <i class="fas fa-phone-alt"></i>
+            <div class="contact-detail">+919760496704</div>
+          </div>
+      
+          <!-- Email -->
+          <div class="icon-container" tabindex="0">
+            <i class="fas fa-envelope"></i>
+            <div class="contact-detail">rohaan.saxena14@gmail.com</div>
+          </div>
+      
+          <!-- LinkedIn -->
+          <div class="icon-container" tabindex="0">
+            <i class="fab fa-linkedin"></i>
+            <div class="contact-detail">
+              <a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" target="_blank">RohanSaxena</a>
+            </div>
+          </div>
+      
+          <!-- GitHub -->
+          <div class="icon-container" tabindex="0">
+            <i class="fab fa-github"></i>
+            <div class="contact-detail">
+              <a href="https://github.com/RohanSaxena14" target="_blank">RohanSaxena14</a>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <script src="js/mic.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
