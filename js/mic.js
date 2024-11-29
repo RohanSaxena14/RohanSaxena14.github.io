@@ -77,7 +77,7 @@ async function toggleRecording() {
 // Play a local audio file (triggered on first click)
 async function playLocalAudio() {
     // Create an audio element with a local audio file (replace with the path to your file)
-    let audio = new Audio('rohanAI/uploads/dummy.wav'); // Replace with the path to your local file
+    let audio = new Audio('data/kickoff.mp3'); // Replace with the path to your local file
     audio.play();
 
     audio.onended = () => {
