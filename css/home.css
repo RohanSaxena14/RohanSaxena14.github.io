@@ -158,7 +158,7 @@ body {
   /* Button */
   .buttons {
     margin-top: 20px;
-    text-align: left;
+    text-align: center;
     display: flex;
     gap: 20px;
   }
@@ -199,7 +199,7 @@ body {
   
  /* Footer with Contact Icons */
 .footer {
-    margin-top: 205px; /* Pushed the footer down */
+    margin-top: 150px; /* Pushed the footer down */
     text-align: center;
     padding: 20px;
     background-color: #fff;
@@ -210,7 +210,7 @@ body {
   .contact-info {
     display: flex;
     justify-content: center;
-    gap: 180px; /* Increased distance between contact blocks */
+    gap: 100px; /* Increased distance between contact blocks */
     font-size: 20px;
   }
   
