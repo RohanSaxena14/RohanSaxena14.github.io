@@ -1,313 +1,321 @@
 /* General styles */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-  }
-  
-  /* Header */
-  .top-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .name {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .red {
-    color: rgb(247, 89, 50);
-  }
-  
-  .black {
-    color: black;
-    font-size: 18px;
-  }
-  
-  .menu {
-    position: relative;
-    margin-right: 60px;
-  }
-  
-  /* Hamburger Menu */
-  .hamburger {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 30px;
-    height: 25px;
-    cursor: pointer;
-  }
-  
-  .line {
-    width: 100%;
-    height: 4px;
-    background-color: #333;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
-  
-  /* Dropdown Menu */
-  .dropdown {
-    display: none;
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    overflow: hidden;
-    width: 150px;
-  }
-  
-  .dropdown-item {
-    display: block;
-    padding: 10px 20px;
-    text-decoration: none;
-    color: black;
-    font-size: 18px;
-  }
-  
-  .dropdown-item:hover {
-    background-color: #f4f4f4;
-  }
-  
-  /* Toggle Hamburger menu (Active state) */
-  .hamburger.open .line:nth-child(1) {
-    transform: translateY(9px) rotate(45deg);
-  }
-  
-  .hamburger.open .line:nth-child(2) {
-    opacity: 0;
-  }
-  
-  .hamburger.open .line:nth-child(3) {
-    transform: translateY(-9px) rotate(-45deg);
-  }
-  
-  /* Show the dropdown when menu is open */
-  .dropdown.open {
-    display: block;
-  }
-  
-  /* Main Container */
-  .container {
-    margin-top: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-  }
-  
-  .profile-pic img {
-    width: 337px; /* Reduced image size by 15% */
-    height: 337px;
-    border-radius: 50%;
-    border: 5px solid #ddd;
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    animation: fadeIn 2s ease;
-  }
-  
-  .profile-pic img:hover {
-    transform: scale(1.1);
-    opacity: 0.9;
-  }
-  
-  .text-buttons {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
-  }
-  
-  .text {
-    text-align: left;
-    max-width: 700px;
-  }
-  
-  h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
-  }
-  
-  p {
-    font-size: 18px;
-    line-height: 1.6;
-  }
-  
-  /* Button */
-  .buttons {
-    margin-top: 20px;
-    text-align: center;
-    display: flex;
-    gap: 20px;
-  }
-  
-  .btn {
-    display: inline-block;
-    padding: 15px 40px;
-    text-decoration: none;
-    color: white;
-    border-radius: 40px;
-    background-color: #ffcc00;
-    text-align: center;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-  }
-  
-  .resume {
-    background-color: rgb(22, 163, 240); /* Green for Resume */
-    padding: 20px 50px; /* Increased padding for larger size */
-    font-size: 24px;
-    outline: 2px solid black;
-  }
-  
-  .talk-to-ai {
-    background-color: rgb(247, 89, 50); /* Red for Talk to AI Rohan */
-    padding: 20px 50px; /* Increased padding for larger size */
-    font-size: 24px;
-    animation: popUp 0.4s infinite alternate; /* Added pop-up animation with size getting bigger */
-    outline: 2px solid black;
-  }
-  
-  .talk-to-ai strong {
-    font-weight: bold; /* Make "AI Rohan" bold */
-  }
-  
-  .btn:hover {
-    transform: translateY(-5px);
-  }
-  
- /* Footer with Contact Icons */
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+}
+
+/* Add a class to control fade-in animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 2.5s forwards;
+}
+
+/* Header */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.red {
+  color: rgb(247, 89, 50);
+}
+
+.black {
+  color: black;
+  font-size: 18px;
+}
+
+.menu {
+  position: relative;
+  margin-right: 60px;
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  cursor: pointer;
+}
+
+.line {
+  width: 100%;
+  height: 4px;
+  background-color: #333;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Dropdown Menu */
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  width: 150px;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+}
+
+.dropdown-item:hover {
+  background-color: #f4f4f4;
+}
+
+/* Toggle Hamburger menu (Active state) */
+.hamburger.open .line:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.open .line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open .line:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Show the dropdown when menu is open */
+.dropdown.open {
+  display: block;
+}
+
+/* Main Container */
+.container {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+/* Profile Picture */
+.profile-pic img {
+  width: 337px;
+  height: 337px;
+  border-radius: 50%;
+  border: 5px solid #ddd;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  animation: fadeIn 2s ease;
+}
+
+.profile-pic img:hover {
+  transform: scale(1.1);
+  opacity: 0.9;
+}
+
+/* Text & Buttons */
+.text-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.text {
+  text-align: left;
+  max-width: 700px;
+}
+
+/* Apply fade-in effect to main text */
+.text h1, .text p {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+.text p {
+  animation-delay: 0.5s; /* Delay the paragraph slightly after the header */
+}
+
+h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Buttons */
+.buttons {
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  gap: 20px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 15px 40px;
+  text-decoration: none;
+  color: white;
+  border-radius: 40px;
+  background-color: #ffcc00;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.resume {
+  background-color: rgb(22, 163, 240);
+  padding: 20px 50px;
+  font-size: 24px;
+  outline: 2px solid black;
+}
+
+.talk-to-ai {
+  background-color: rgb(247, 89, 50);
+  padding: 20px 50px;
+  font-size: 24px;
+  animation: popUp 0.4s infinite alternate;
+  outline: 2px solid black;
+}
+
+.talk-to-ai strong {
+  font-weight: bold;
+}
+
+.btn:hover {
+  transform: translateY(-5px);
+}
+
+/* Footer */
 .footer {
-    margin-top: 150px; /* Pushed the footer down */
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    width: 100%;
-  }
-  
-  .contact-info {
-    display: flex;
-    justify-content: center;
-    gap: 100px; /* Increased distance between contact blocks */
-    font-size: 20px;
-  }
-  
-  .contact-info .icon-container {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-  
-  .contact-info .icon-container:hover {
-    transform: scale(1.5);
-    color: black;
-    /* Hover on the top of the icon */
-    transform: translateY(-50px);
-  }
-  
-  .contact-info .contact-detail {
-    position: absolute;
-    bottom: -35px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: none;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .contact-info .icon-container:hover .contact-detail,
-  .contact-info .icon-container:focus .contact-detail {
-    display: block;
-  }
-  
-  .contact-info .icon-container a {
-    text-decoration: none;
-    color: #0073e6;
-  }
-  
-  .contact-info .icon-container a:hover {
-    color: #0056b3;
-  }
-  
-  /* Responsive */
-  @media screen and (max-width: 768px) {
-    .contact-info {
-      flex-direction: column;
-      gap: 20px;
-    }
-  }
-  
-  /* Keyframes */
-  @keyframes fadeIn {
-    0% {
+  margin-top: 150px;
+  text-align: center;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.contact-info {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  font-size: 20px;
+}
+
+.contact-info .icon-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.contact-info .icon-container:hover {
+  transform: scale(1.5);
+  color: black;
+  transform: translateY(-50px);
+}
+
+.contact-info .contact-detail {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: none;
+  font-size: 18px;
+  color: #333;
+}
+
+.contact-info .icon-container:hover .contact-detail,
+.contact-info .icon-container:focus .contact-detail {
+  display: block;
+}
+
+.contact-info .icon-container a {
+  text-decoration: none;
+  color: #0073e6;
+}
+
+.contact-info .icon-container a:hover {
+  color: #0056b3;
+}
+
+/* Keyframes for fade-in animation */
+@keyframes fadeIn {
+  0% {
       opacity: 0;
-      transform: scale(0.8);
-    }
-    100% {
+      transform: translateY(20px);
+  }
+  100% {
       opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes popUp {
-    0% {
       transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-10px);
-    }
   }
-  
-  /* Responsive */
-  @media screen and (max-width: 768px) {
-    .content {
+}
+
+@keyframes popUp {
+  0% {
+      transform: translateY(0);
+  }
+  100% {
+      transform: translateY(-10px);
+  }
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .content {
       flex-direction: column;
       text-align: center;
-    }
-  
-    .profile-pic img {
+  }
+
+  .profile-pic img {
       width: 300px;
       height: 300px;
-    }
-  
-    .buttons .btn {
+  }
+
+  .buttons .btn {
       width: 60px;
       height: 60px;
       padding: 10px;
       font-size: 14px;
-    }
-  
-    .contact-info {
+  }
+
+  .contact-info {
       flex-direction: column;
       gap: 10px;
-    }
   }
-  
+}

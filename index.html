@@ -26,8 +26,7 @@
         <a href="data/rohan_resume_single_column.pdf" class="dropdown-item">Resume</a>
         <a href="mic.html" class="dropdown-item">AI Rohan</a>
         <a href="https://github.com/RohanSaxena14" class="dropdown-item">Github</a>
-        <a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" class="dropdown-item">Linkedin</a>
-        <a href="tel:+919760496704" class="dropdown-item">Mobile</a>
+        <a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" class="dropdown-item">LinkedIn</a>
         <a href="mailto:rohaan.saxena14@gmail.com" class="dropdown-item">Email</a>
       </div>
     </div>
@@ -40,13 +39,13 @@
         <img src="data/dummy.avif" alt="Profile Picture">
       </div>
       <div class="text-buttons">
-        <div class="text">
+        <div class="text fade-in">
           <h1>Hello!</h1>
           <p>A Bit About Me</p>
           <p>
-            Hi, I’m <span class="red", style="font-weight: bold; font-size: 24px;">Rohan Saxena</span>, an AI scientist with a knack for combining innovation and technology to create impactful solutions. I’ve built this space to showcase my expertise, journey, and the projects I’m passionate about.
+            Hi, I’m <span class="red" style="font-weight: bold; font-size: 24px;">Rohan Saxena</span>, an AI scientist with a knack for combining innovation and technology to create impactful solutions. I’ve built this space to showcase my expertise, journey, and the projects I’m passionate about.
             <br>
-            Don’t forget to meet my <span class="red", style="font-weight: bold; font-size: 18px;">witty chatbot!</span>
+            Don’t forget to meet my <span class="red" style="font-weight: bold; font-size: 18px;">witty chatbot!</span>
             <br>
             It’s always ready to chat, answer questions, or show off a little AI-powered humor. 
             <br><br>
@@ -61,38 +60,35 @@
     </div>
   </div>
 
+  <!-- Footer -->
   <div class="footer">
     <div class="contact-info">
-      <!-- Phone -->
-      <div class="icon-container" tabindex="0">
-        <i class="fas fa-phone-alt"></i>
-        <div class="contact-detail">+919760496704</div>
+      <div class="icon-container">
+        <i class="fas fa-mobile-alt"></i>
+        <div class="contact-detail">+91 9760496704</div>
       </div>
-  
-      <!-- Email -->
-      <div class="icon-container" tabindex="0">
-        <i class="fas fa-envelope"></i>
-        <div class="contact-detail">rohaan.saxena14@gmail.com</div>
-      </div>
-  
-      <!-- LinkedIn -->
-      <div class="icon-container" tabindex="0">
-        <i class="fab fa-linkedin"></i>
-        <div class="contact-detail">
-          <a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" target="_blank">RohanSaxena</a>
-        </div>
-      </div>
-  
-      <!-- GitHub -->
-      <div class="icon-container" tabindex="0">
+      <div class="icon-container">
         <i class="fab fa-github"></i>
-        <div class="contact-detail">
-          <a href="https://github.com/RohanSaxena14" target="_blank">RohanSaxena14</a>
-        </div>
+        <div class="contact-detail"><a href="https://github.com/RohanSaxena14" target="_blank">GitHub</a></div>
+      </div>
+      <div class="icon-container">
+        <i class="fab fa-linkedin"></i>
+        <div class="contact-detail"><a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" target="_blank">LinkedIn</a></div>
+      </div>
+      <div class="icon-container">
+        <i class="fas fa-envelope"></i>
+        <div class="contact-detail"><a href="mailto:rohaan.saxena14@gmail.com" target="_blank">rohaan.saxena14@gmail.com</a></div>
       </div>
     </div>
   </div>
 
-  <script src="js/home.js"></script>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const dropdown = document.getElementById('dropdown');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      dropdown.classList.toggle('open');
+    });
+  </script>
 </body>
 </html>
