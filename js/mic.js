@@ -50,6 +50,7 @@ async function initializeAudio() {
 
             statusText.textContent = "sharing...";
             const response = await fetch("https://583c-13-251-157-81.ngrok-free.app/chat", {
+            // const response = await fetch("http://localhost:5002/chat", {
                 method: "POST",
                 body: formData,
             });
@@ -75,7 +76,7 @@ async function initializeAudio() {
 // Handle button clicks for recording and stopping
 async function toggleRecording() {
     if (isTalking) {
-        return;
+        return; // Prevent any interaction while the bot is talking
     }
 
     if (isFirstClick) {
@@ -86,7 +87,7 @@ async function toggleRecording() {
         if (isRecording) {
             mediaRecorder.stop();
             statusText.textContent = "listening...";
-            micButton.disabled = true;
+            micButton.disabled = true; // Disable the mic button while recording
             micButton.classList.remove("recording");
             micButton.classList.add("listening");
         } else {
@@ -105,14 +106,17 @@ async function toggleRecording() {
     }
 }
 
-// Play a local audio file
+// Play a local audio file (used for prerecorded message)
 async function playLocalAudio() {
     let audio = new Audio("data/kickoff.mp3"); // Replace with your local file path
     audio.play();
 
+    // Disable the mic button right away when the bot starts talking
+    micButton.disabled = true;
+
     audio.onended = () => {
         statusText.textContent = "listening...";
-        micButton.disabled = false;
+        micButton.disabled = false; // Re-enable the mic button after local audio ends
         micButton.classList.remove("recording");
         micButton.classList.add("listening");
 
@@ -126,15 +130,18 @@ async function playLocalAudio() {
     };
 }
 
-// Play the received audio from the server
+// Play the received audio from the server (this is where we disable the button while the bot is talking)
 async function playAudio() {
+    isTalking = true; // Set isTalking to true to indicate the bot is talking
     statusText.textContent = "talking...";
+    micButton.disabled = true; // Disable the mic button while the bot is talking
     let audio = new Audio(audioURL);
     audio.play();
 
     audio.onended = () => {
+        isTalking = false; // Set isTalking to false when the audio ends
         statusText.textContent = "idle...";
-        micButton.disabled = false;
+        micButton.disabled = false; // Re-enable the mic button after the bot finishes talking
         micButton.classList.remove("recording");
         micButton.classList.remove("listening");
     };
