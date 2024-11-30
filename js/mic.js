@@ -8,6 +8,14 @@ let micButton = document.getElementById("micButton");
 let statusText = document.getElementById("status");
 let audioStream;
 
+// Generate a random session ID when the page loads
+const sessionId = generateSessionId();
+
+// Function to generate a random session ID
+function generateSessionId() {
+    return Math.random().toString(36).substring(2, 15); // Generate a random string
+}
+
 // List audio input devices
 async function listAudioDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -38,9 +46,10 @@ async function initializeAudio() {
             audioChunks = [];
             const formData = new FormData();
             formData.append("audio", audioBlob);
+            formData.append("sessionId", sessionId); // Add session ID to the form data
 
             statusText.textContent = "sharing...";
-            const response = await fetch("https://3c4b-103-233-219-109.ngrok-free.app/chat", {
+            const response = await fetch("https://583c-13-251-157-81.ngrok-free.app/chat", {
                 method: "POST",
                 body: formData,
             });
