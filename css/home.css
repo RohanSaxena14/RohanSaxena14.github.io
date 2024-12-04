@@ -19,7 +19,7 @@ body {
 
 /* Header */
 .top-bar {
-  position: fixed;
+  position: fixed; /* Keeps the header fixed on the screen */
   top: 0;
   left: 0;
   width: 100%;
@@ -29,7 +29,9 @@ body {
   align-items: center;
   padding: 10px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensures the header appears on top of all elements */
 }
+
 
 .name {
   font-size: 24px;
@@ -113,10 +115,10 @@ body {
 
 /* Main Container */
 .container {
-  margin-top: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* Text Container Styles */
+  border-radius: 10px; /* Rounds the corners of the border */
+  padding: 20px; /* Adds spacing between the text and the border */
+  margin: 100px; /* Adds space between the text container and screen edges */
 }
 
 .content {
@@ -128,8 +130,8 @@ body {
 
 /* Profile Picture */
 .profile-pic img {
-  width: 300px;
-  height: 300px;
+  width: 337px;
+  height: 337px;
   border-radius: 50%;
   border: 5px solid #ddd;
   transition: transform 0.5s ease, opacity 0.5s ease;
@@ -181,15 +183,11 @@ p {
   gap: 20px;
 }
 
-.btn {
-  display: inline-block;
-  padding: 15px 40px;
-  text-decoration: none;
-  color: white;
-  border-radius: 40px;
-  background-color: #ffcc00;
+.buttons .btn {
+  padding: 20px 50px;
+  font-size: 24px;
+  border-radius: 100px;
   text-align: center;
-  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .resume {
@@ -197,6 +195,9 @@ p {
   padding: 20px 50px;
   font-size: 24px;
   outline: 2px solid black;
+  color: white;
+  /* Remove underline from link */
+  text-decoration: none;
 }
 
 .talk-to-ai {
@@ -205,10 +206,14 @@ p {
   font-size: 24px;
   animation: popUp 0.4s infinite alternate;
   outline: 2px solid black;
+  color: white;
+  /* Remove underline from link */
+  text-decoration: none;
 }
 
 .talk-to-ai strong {
   font-weight: bold;
+  color: white;
 }
 
 .btn:hover {
@@ -217,7 +222,7 @@ p {
 
 /* Footer */
 .footer {
-  margin-top: 150px;
+  margin-top: 10px;
   text-align: center;
   padding: 20px;
   background-color: #fff;
@@ -228,8 +233,10 @@ p {
 .contact-info {
   display: flex;
   justify-content: center;
-  gap: 50px;
+  align-items: center;
+  gap: 20px;
   font-size: 20px;
+  flex-wrap: wrap; /* Ensures wrapping if space is insufficient */
 }
 
 .contact-info .icon-container {
@@ -238,17 +245,17 @@ p {
   height: 40px;
   cursor: pointer;
   transition: transform 0.3s ease;
+  text-align: center;
 }
 
 .contact-info .icon-container:hover {
   transform: scale(1.5);
   color: black;
-  transform: translateY(-50px);
 }
 
 .contact-info .contact-detail {
   position: absolute;
-  bottom: -35px;
+  top: -45px; /* Adjusted to position the detail above the icon */
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
@@ -256,7 +263,7 @@ p {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   display: none;
-  font-size: 18px;
+  font-size: 12px;
   color: #333;
 }
 
@@ -307,15 +314,24 @@ p {
       height: 300px;
   }
 
+  .buttons {
+    flex-direction: row; /* Ensures buttons are side by side */
+    justify-content: center; /* Centers the buttons horizontally */
+    gap: 15px; /* Adjusts spacing between buttons */
+  }
+
   .buttons .btn {
-      width: 60px;
-      height: 60px;
-      padding: 10px;
-      font-size: 14px;
+    padding: 15px 30px; /* Makes the buttons bigger */
+    font-size: 18px; /* Adjusts the font size for better visibility */
+    border-radius: 30px; /* Keeps the buttons rounded */
   }
 
   .contact-info {
-      flex-direction: column;
-      gap: 10px;
+    gap: 15px; /* Adjust spacing for smaller screens */
+  }
+
+  .container {
+    margin: 100px; /* Reduces the margin for smaller screens */
+    padding: 15px; /* Slightly smaller padding for better fit */
   }
 }
