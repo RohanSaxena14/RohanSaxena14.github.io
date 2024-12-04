@@ -7,26 +7,24 @@ hamburger.addEventListener('click', function() {
   dropdown.classList.toggle('open');
 });
 
-// Toggle the contact detail on icon click/touch
-document.querySelectorAll('.contact-info .icon-container').forEach(function(icon) {
-  icon.addEventListener('click', function(event) {
-    // Toggle the clicked class to show/hide the contact detail
-    icon.classList.toggle('clicked');
+// Function to copy text (phone number or email)
+function copyText(type) {
+  let textToCopy;
+  
+  if (type === 'phone') {
+    textToCopy = '+91 9760496704';  // Mobile number
+  } else if (type === 'email') {
+    textToCopy = 'rohaan.saxena14@gmail.com';  // Email ID
+  }
 
-    // Prevent default action if it's a link and stop event propagation for better usability
-    event.preventDefault();
-    event.stopPropagation();
-  });
-});
+  // Create a temporary textarea to copy the text
+  let textArea = document.createElement('textarea');
+  textArea.value = textToCopy;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand('copy');  // Copy the text
+  document.body.removeChild(textArea);
 
-// Optionally, add a "touchstart" event for better mobile responsiveness
-document.querySelectorAll('.contact-info .icon-container').forEach(function(icon) {
-  icon.addEventListener('touchstart', function(event) {
-    // Toggle the clicked class to show/hide the contact detail
-    icon.classList.toggle('clicked');
-    
-    // Prevent default action and stop event propagation to ensure the interaction works smoothly on mobile
-    event.preventDefault();
-    event.stopPropagation();
-  });
-});
+  // Optionally, show an alert or notification to indicate success
+  alert(`${type.charAt(0).toUpperCase() + type.slice(1)} copied to clipboard!`);
+}

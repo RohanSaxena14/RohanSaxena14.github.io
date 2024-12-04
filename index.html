@@ -59,36 +59,41 @@
       </div>
     </div>
   </div>
-
   <!-- Footer -->
   <div class="footer">
     <div class="contact-info">
+      <!-- GitHub -->
       <div class="icon-container">
-        <i class="fas fa-mobile-alt"></i>
-        <div class="contact-detail">+91 9760496704</div>
+        <a href="https://github.com/RohanSaxena14" target="_blank">
+          <i class="fab fa-github"></i>
+          <div class="contact-detail">GitHub</div>
+        </a>
       </div>
+
+      <!-- LinkedIn -->
       <div class="icon-container">
-        <i class="fab fa-github"></i>
-        <div class="contact-detail"><a href="https://github.com/RohanSaxena14" target="_blank">GitHub</a></div>
+        <a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" target="_blank">
+          <i class="fab fa-linkedin"></i>
+          <div class="contact-detail">LinkedIn</div>
+        </a>
       </div>
-      <div class="icon-container">
-        <i class="fab fa-linkedin"></i>
-        <div class="contact-detail"><a href="https://www.linkedin.com/in/rohan-saxena-2846a5163/" target="_blank">LinkedIn</a></div>
+      <!-- Mobile Number -->
+      <div class="icon-container" id="phone">
+        <i class="fas fa-mobile-alt" onclick="copyText('phone')"></i>
+        <div class="contact-detail">
+          <span>+91 9760496704</span>
+        </div>
       </div>
-      <div class="icon-container">
-        <i class="fas fa-envelope"></i>
-        <div class="contact-detail"><a href="mailto:rohaan.saxena14@gmail.com" target="_blank">rohaan.saxena14@gmail.com</a></div>
+
+      <!-- Email -->
+      <div class="icon-container" id="email">
+        <i class="fas fa-envelope" onclick="copyText('email')"></i>
+        <div class="contact-detail">
+          <span>rohaan.saxena14@gmail.com</span>
+        </div>
       </div>
     </div>
   </div>
-
-  <script>
-    const hamburger = document.getElementById('hamburger');
-    const dropdown = document.getElementById('dropdown');
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      dropdown.classList.toggle('open');
-    });
-  </script>
+  <script src="js/home.js"></script>
 </body>
 </html>
