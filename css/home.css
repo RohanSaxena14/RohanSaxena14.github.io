@@ -236,7 +236,7 @@ p {
   align-items: center;
   gap: 20px;
   font-size: 20px;
-  flex-wrap: wrap; /* Ensures wrapping if space is insufficient */
+  flex-wrap: wrap;
 }
 
 .contact-info .icon-container {
@@ -253,14 +253,9 @@ p {
   color: black;
 }
 
-.contact-info .icon-container:active {
-  transform: scale(1.5);
-  color: black;
-}
-
 .contact-info .contact-detail {
   position: absolute;
-  top: -45px; /* Adjusted to position the detail above the icon */
+  top: -45px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
@@ -274,10 +269,9 @@ p {
 
 .contact-info .icon-container:hover .contact-detail,
 .contact-info .icon-container:focus .contact-detail,
-.contact-info .icon-container:active .contact-detail {
+.contact-info .icon-container.clicked .contact-detail {
   display: block;
 }
-
 
 .contact-info .icon-container a {
   text-decoration: none;
@@ -285,10 +279,6 @@ p {
 }
 
 .contact-info .icon-container a:hover {
-  color: #0056b3;
-}
-
-.contact-info .icon-container a:active {
   color: #0056b3;
 }
 
