@@ -49,7 +49,7 @@ async function initializeAudio() {
             formData.append("sessionId", sessionId); // Add session ID to the form data
 
             statusText.textContent = "sharing...";
-            const response = await fetch("https://d68e-23-23-48-116.ngrok-free.app/chat", {
+            const response = await fetch("https://1f4d-103-233-219-109.ngrok-free.app/chat", {
                 method: "POST",
                 body: formData,
             });
