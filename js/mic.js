@@ -107,7 +107,7 @@ async function toggleRecording() {
 
 // Play a local audio file (used for prerecorded message)
 async function playLocalAudio() {
-    let audio = new Audio("data/kickoff.mp3"); // Replace with your local file path
+    let audio = new Audio("data/kickoff2.mp3"); // Replace with your local file path
     audio.play();
 
     // Disable the mic button right away when the bot starts talking
