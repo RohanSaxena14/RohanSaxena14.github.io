@@ -3,11 +3,16 @@ function initGlitchAnimation() {
     const profileImage = document.querySelector('.profile-image');
     const mobileProfileImage = document.querySelector('.mobile-profile-image');
     
+    // Check if mobile
+    const isMobile = window.innerWidth <= 768;
+    
     function triggerGlitch(element) {
         if (!element) return;
         
-        // Random glitch duration between 0.25 and 0.65 seconds
-        const glitchDuration = Math.random() * 0.4 + 0.25; // 0.25 to 0.65 seconds
+        // Random glitch duration - shorter on mobile
+        const glitchDuration = isMobile 
+            ? Math.random() * 0.2 + 0.15  // 0.15 to 0.35 seconds on mobile
+            : Math.random() * 0.4 + 0.25; // 0.25 to 0.65 seconds on desktop
         
         // Add glitch class
         element.classList.add('glitching');
@@ -18,11 +23,13 @@ function initGlitchAnimation() {
         }, glitchDuration * 1000);
     }
     
-    // Trigger glitch every 3 seconds for both images
+    // Trigger glitch - less frequent on mobile
+    const glitchInterval = isMobile ? 6000 : 3000; // 6 seconds on mobile, 3 on desktop
+    
     setInterval(() => {
         triggerGlitch(profileImage);
         triggerGlitch(mobileProfileImage);
-    }, 3000);
+    }, glitchInterval);
 }
 
 // Mode toggle functionality

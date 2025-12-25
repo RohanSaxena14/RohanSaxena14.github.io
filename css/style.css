@@ -767,6 +767,11 @@ body.researcher-view .researcher-content {
     body.researcher-view .researcher-content {
         padding: 80px 30px 40px 30px;
     }
+    
+    /* Show mobile profile in researcher view */
+    body.researcher-view .mobile-profile-container {
+        display: block !important;
+    }
 }
 
 /* Mode Toggle Styles */
@@ -1036,20 +1041,26 @@ body.ai-mode .profile-icon-tooltip {
 }
 
 body.ai-mode .mobile-profile-icons {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-start;
+    justify-content: center;
     gap: 8px;
+    max-width: 100%;
 }
 
 body.ai-mode .mobile-profile-icons .profile-icon {
     width: auto;
+    min-width: calc(50% - 8px);
+    flex: 0 0 calc(50% - 8px);
     height: auto;
     border-radius: 8px;
-    padding: 8px 12px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    box-sizing: border-box;
 }
 
 body.ai-mode .mobile-profile-icons .profile-icon::after {
