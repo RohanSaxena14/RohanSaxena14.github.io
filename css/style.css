@@ -284,14 +284,14 @@ body {
 .content-wrapper {
     opacity: 0;
     animation: fadeIn 1s ease-in-out 0.5s forwards;
-    padding: 140px 400px 80px 380px;
-    max-width: 1800px;
+    padding: 140px 340px 80px 380px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
 @media (max-width: 1800px) {
     .content-wrapper {
-        padding: 140px 360px 80px 360px;
+        padding: 140px 340px 80px 360px;
         max-width: 1700px;
     }
 }
@@ -312,7 +312,7 @@ body {
 
 @media (max-width: 1400px) {
     .content-wrapper {
-        padding: 120px 300px 60px 300px;
+        padding: 120px 285px 60px 315px;
         max-width: 1400px;
     }
 }
@@ -771,7 +771,7 @@ body.researcher-view .researcher-content {
     /* Show mobile profile in researcher view */
     body.researcher-view .content-wrapper {
         display: block !important;
-        padding: 0 !important;
+        padding: 80px 0 0 0 !important;
         opacity: 1 !important;
         animation: none !important;
     }
@@ -782,7 +782,8 @@ body.researcher-view .researcher-content {
     
     body.researcher-view .mobile-profile-container {
         display: block !important;
-        padding: 20px;
+        padding: 0 20px 20px 20px;
+        margin-top: 0;
     }
 }
 
