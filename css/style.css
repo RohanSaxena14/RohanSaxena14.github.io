@@ -284,21 +284,54 @@ body {
 .content-wrapper {
     opacity: 0;
     animation: fadeIn 1s ease-in-out 0.5s forwards;
-    padding: 140px 340px 80px 380px;
-    max-width: 1600px;
+    padding: 140px 400px 80px 380px;
+    max-width: 1800px;
     margin: 0 auto;
+}
+
+@media (max-width: 1800px) {
+    .content-wrapper {
+        padding: 140px 360px 80px 360px;
+        max-width: 1700px;
+    }
+}
+
+@media (max-width: 1600px) {
+    .content-wrapper {
+        padding: 140px 340px 80px 340px;
+        max-width: 1600px;
+    }
+}
+
+@media (max-width: 1500px) {
+    .content-wrapper {
+        padding: 120px 320px 60px 320px;
+        max-width: 1500px;
+    }
 }
 
 @media (max-width: 1400px) {
     .content-wrapper {
-        padding: 120px 285px 60px 315px;
+        padding: 120px 300px 60px 300px;
         max-width: 1400px;
+    }
+}
+
+@media (max-width: 1300px) {
+    .content-wrapper {
+        padding: 100px 100px 40px 280px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .content-wrapper {
+        padding: 100px 80px 40px 260px;
     }
 }
 
 @media (max-width: 1024px) {
     .content-wrapper {
-        padding: 100px 230px 40px 250px;
+        padding: 100px 40px 40px 250px;
     }
 }
 
@@ -938,6 +971,70 @@ body.ai-mode .profile-icon-tooltip {
     display: none;
 }
 
+/* AI Mode Contact Icons - Responsive */
+@media (max-width: 1600px) {
+    body.ai-mode .profile-contact-icons {
+        top: 330px;
+        left: 190px;
+    }
+    
+    body.ai-mode .profile-icon {
+        padding: 7px 10px;
+        gap: 8px;
+    }
+    
+    body.ai-mode .profile-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    body.ai-mode .profile-icon::after {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 1400px) {
+    body.ai-mode .profile-contact-icons {
+        top: 280px;
+        left: 160px;
+    }
+    
+    body.ai-mode .profile-icon {
+        padding: 6px 9px;
+        gap: 7px;
+    }
+    
+    body.ai-mode .profile-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    body.ai-mode .profile-icon::after {
+        font-size: 0.75em;
+    }
+}
+
+@media (max-width: 1024px) {
+    body.ai-mode .profile-contact-icons {
+        top: 230px;
+        left: 130px;
+    }
+    
+    body.ai-mode .profile-icon {
+        padding: 5px 8px;
+        gap: 6px;
+    }
+    
+    body.ai-mode .profile-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    body.ai-mode .profile-icon::after {
+        font-size: 0.7em;
+    }
+}
+
 body.ai-mode .mobile-profile-icons {
     flex-direction: column;
     align-items: flex-start;
@@ -1091,6 +1188,41 @@ body.ai-mode .role-btn:hover:not(.active) {
     animation: fadeIn 1s ease-in-out 1.4s forwards;
     z-index: 998;
     padding-right: 8px;
+}
+
+@media (max-width: 1800px) {
+    .articles-sidebar {
+        width: 300px;
+        right: 45px;
+    }
+}
+
+@media (max-width: 1600px) {
+    .articles-sidebar {
+        width: 280px;
+        right: 40px;
+    }
+}
+
+@media (max-width: 1500px) {
+    .articles-sidebar {
+        width: 260px;
+        right: 35px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .articles-sidebar {
+        width: 240px;
+        right: 30px;
+        top: 140px;
+    }
+}
+
+@media (max-width: 1300px) {
+    .articles-sidebar {
+        display: none;
+    }
 }
 
 .articles-sidebar::-webkit-scrollbar {
