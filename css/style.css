@@ -774,13 +774,13 @@ body.researcher-view .researcher-content {
         padding: 80px 30px 40px 30px;
     }
     
-    /* Show mobile profile in researcher view */
+    /* Show mobile profile in researcher view - match Builder exactly */
     body.researcher-view .content-wrapper {
         display: block !important;
-        padding: 60px 0 0 0 !important;
+        padding: 40px 30px 0 30px !important;
         opacity: 1 !important;
         animation: none !important;
-        margin-bottom: -20px !important;
+        margin-bottom: 0 !important;
     }
     
     body.researcher-view .content-wrapper > *:not(.mobile-profile-container) {
@@ -789,8 +789,9 @@ body.researcher-view .researcher-content {
     
     body.researcher-view .mobile-profile-container {
         display: block !important;
-        padding: 0 20px;
-        margin-bottom: 10px !important;
+        padding: 0 !important;
+        margin-bottom: 30px !important;
+        text-align: center;
     }
 }
 
