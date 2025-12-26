@@ -185,6 +185,10 @@ function initMicrophone() {
     let audioChunks = [];
     let isReceivingAudio = false;
     
+    // NEW: Session time tracking
+    let sessionTimeLimitReached = false;
+    let remainingTimeInterval = null;
+    
     // Helper function to add log entries
     function addLog(message, type = 'info') {
         if (!logsContent) {
@@ -291,11 +295,12 @@ function initMicrophone() {
             console.log('✅ Connected to server');
             addLog('Connected to server', 'success');
             micText.textContent = 'Connected - Click to start';
+            sessionTimeLimitReached = false; // Reset on reconnect
         });
         
         socket.on('connection_established', (data) => {
             console.log('🔗 Connection established:', data);
-            addLog('Connection established', 'success');
+            addLog(`Connected - ${data.time_limit / 60} min limit`, 'success');
         });
         
         socket.on('transcription_result', (data) => {
@@ -338,6 +343,11 @@ function initMicrophone() {
             
             // Add new AI response (it will persist until next llm_response)
             addLog(`AI: "${data.ai_response}"`, 'llm');
+            
+            // Update remaining time if provided
+            if (data.remaining_time !== undefined) {
+                console.log(`⏱️  Remaining time: ${data.remaining_time}s`);
+            }
         });
         
         // NEW: Handle playback starting
@@ -410,7 +420,8 @@ function initMicrophone() {
                         socket.emit('playback_ended', { completed: true });
                     }
                     
-                    if (isListening) {
+                    // Check if session ended after this playback
+                    if (!sessionTimeLimitReached && isListening) {
                         micText.textContent = 'Listening...';
                     }
                 };
@@ -440,7 +451,7 @@ function initMicrophone() {
         socket.on('ready_for_input', (data) => {
             console.log('✅ Ready for input:', data);
             
-            if (isListening) {
+            if (isListening && !sessionTimeLimitReached) {
                 micText.textContent = 'Listening...';
                 addLog('Ready for input', 'success');
             }
@@ -449,6 +460,63 @@ function initMicrophone() {
         socket.on('listening_started', (data) => {
             console.log('🎤 Listening started:', data);
             addLog('Listening started', 'success');
+            
+            // Show remaining time
+            if (data.remaining_time !== undefined) {
+                const minutes = Math.floor(data.remaining_time / 60);
+                const seconds = Math.floor(data.remaining_time % 60);
+                addLog(`Time remaining: ${minutes}m ${seconds}s`, 'info');
+            }
+        });
+        
+        // ==========================================
+        // NEW: Handle time limit reached
+        // ==========================================
+        socket.on('time_limit_reached', (data) => {
+            console.log('⏰ Time limit reached:', data);
+            sessionTimeLimitReached = true;
+            
+            // Clear any remaining time interval
+            if (remainingTimeInterval) {
+                clearInterval(remainingTimeInterval);
+                remainingTimeInterval = null;
+            }
+            
+            // Show prominent message
+            addLog('⏰ 5-minute limit reached', 'error');
+            addLog('Wrapping up conversation...', 'warning');
+            
+            // Update button text
+            micText.textContent = 'Time limit reached';
+            
+            // Disable microphone button visually
+            micButton.style.opacity = '0.6';
+            micButton.style.cursor = 'not-allowed';
+        });
+        
+        // ==========================================
+        // NEW: Handle session ended
+        // ==========================================
+        socket.on('session_ended', (data) => {
+            console.log('👋 Session ended:', data);
+            const minutes = Math.floor(data.total_time / 60);
+            const seconds = Math.floor(data.total_time % 60);
+            
+            addLog(`Session ended after ${minutes}m ${seconds}s`, 'info');
+            addLog('Refresh to start new conversation', 'info');
+            
+            // Stop listening
+            stopListening();
+            isListening = false;
+            micButton.classList.remove('listening');
+            micText.textContent = 'Session ended - Refresh page';
+            
+            // Optionally show refresh prompt
+            setTimeout(() => {
+                if (confirm('Conversation ended. Refresh to start a new session?')) {
+                    location.reload();
+                }
+            }, 2000);
         });
         
         socket.on('error', (data) => {
@@ -462,11 +530,24 @@ function initMicrophone() {
             addLog('Disconnected from server', 'error');
             micText.textContent = 'Disconnected - Click to reconnect';
             stopListening();
+            
+            // Clear remaining time interval
+            if (remainingTimeInterval) {
+                clearInterval(remainingTimeInterval);
+                remainingTimeInterval = null;
+            }
         });
     }
     
     async function startListening() {
         try {
+            // Check if session time limit already reached
+            if (sessionTimeLimitReached) {
+                addLog('Session expired - Please refresh', 'error');
+                micText.textContent = 'Session expired - Refresh page';
+                return;
+            }
+            
             addLog('Requesting microphone access...', 'info');
             
             // Check if mediaDevices is available
@@ -499,7 +580,7 @@ function initMicrophone() {
             const processor = audioContext.createScriptProcessor(bufferSize, 1, 1);
             
             processor.onaudioprocess = (e) => {
-                if (socket && socket.connected) {
+                if (socket && socket.connected && !sessionTimeLimitReached) {
                     // Get raw audio samples (Float32Array)
                     const inputData = e.inputBuffer.getChannelData(0);
                     
@@ -568,6 +649,12 @@ function initMicrophone() {
     function stopListening() {
         console.log('🛑 Stopping listening...');
         
+        // Clear remaining time interval
+        if (remainingTimeInterval) {
+            clearInterval(remainingTimeInterval);
+            remainingTimeInterval = null;
+        }
+        
         // Stop AudioContext and processor
         if (window.audioProcessor) {
             window.audioProcessor.disconnect();
@@ -618,7 +705,7 @@ function initMicrophone() {
             currentAudio = null;
         }
         
-        if (isListening) {
+        if (isListening && !sessionTimeLimitReached) {
             micText.textContent = 'Listening...';
         }
         
@@ -626,6 +713,12 @@ function initMicrophone() {
     }
     
     micButton.addEventListener('click', () => {
+        // Don't allow toggling if session ended
+        if (sessionTimeLimitReached) {
+            addLog('Session expired - Refresh page to restart', 'error');
+            return;
+        }
+        
         isListening = !isListening;
         
         // Set global flag
