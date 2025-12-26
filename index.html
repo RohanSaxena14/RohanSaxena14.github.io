@@ -200,6 +200,20 @@
         <div class="microphone-text">Talk to My Digital Twin</div>
     </div>
 
+    <!-- Live Logs Display for Synthetic View -->
+    <div class="synthetic-logs">
+        <div class="logs-header">
+            <span class="logs-title">SYSTEM ACTIVITY</span>
+            <button class="logs-clear-btn" title="Clear logs">✕</button>
+        </div>
+        <div class="logs-content" id="synthetic-logs-content">
+            <div class="log-entry log-info">
+                <span class="log-icon">●</span>
+                <span class="log-text">Ready to connect...</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Pixelated Robot -->
     <div class="pixel-robot">
         <img src="https://github.com/RohanSaxena14/RohanSaxena14.github.io/raw/master/data/robot-run.gif" alt="Robot">
@@ -224,6 +238,8 @@
         <button class="mode-btn ai">AI</button>
     </div>
 
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

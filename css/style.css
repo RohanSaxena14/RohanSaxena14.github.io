@@ -53,6 +53,46 @@ body {
     animation: fadeIn 1s ease-in-out 0.2s forwards, glitchShakeOnce 0.1s ease-out;
 }
 
+/* When glitch happens, make all horizontal lines (h2 borders) glow */
+body.glitch-active h2 {
+    animation: lineGlow 0.3s ease-out;
+}
+
+@keyframes lineGlow {
+    0% {
+        border-bottom-color: #e8e8e8;
+        box-shadow: none;
+    }
+    50% {
+        border-bottom-color: #667eea;
+        box-shadow: 0 1px 8px rgba(102, 126, 234, 0.6), 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+    100% {
+        border-bottom-color: #e8e8e8;
+        box-shadow: none;
+    }
+}
+
+/* AI mode glow effect - brighter for dark background */
+body.ai-mode.glitch-active h2 {
+    animation: lineGlowDark 0.3s ease-out;
+}
+
+@keyframes lineGlowDark {
+    0% {
+        border-bottom-color: #3a3a3a;
+        box-shadow: none;
+    }
+    50% {
+        border-bottom-color: #667eea;
+        box-shadow: 0 1px 10px rgba(102, 126, 234, 0.9), 0 0 30px rgba(102, 126, 234, 0.6);
+    }
+    100% {
+        border-bottom-color: #3a3a3a;
+        box-shadow: none;
+    }
+}
+
 @keyframes glitchShakeOnce {
     0% { transform: translate(-50%, -50%) translate(-1px, 1px); }
     33% { transform: translate(-50%, -50%) translate(1px, -1px); }
@@ -736,6 +776,157 @@ body.ai-mode .microphone-button:hover {
 body.ai-mode .microphone-button.listening {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3), 0 0 0 10px rgba(102, 126, 234, 0.1);
+}
+
+/* Synthetic Logs Display - Simple Text Lines */
+.synthetic-logs {
+    display: none;
+    position: fixed;
+    top: 65%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    z-index: 998;
+    text-align: center;
+    pointer-events: none;
+}
+
+body.synthetic-view .synthetic-logs {
+    display: block;
+}
+
+.logs-header {
+    display: none; /* Hide header completely */
+}
+
+.logs-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.95em;
+    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+}
+
+.log-entry {
+    opacity: 1;
+    transform: translateY(0);
+    animation: logAppear 0.3s ease-out, logFadeOut 0.5s ease-out 3s forwards;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Persisted logs (LLM responses) don't fade out - IMPORTANT: must override all other animations */
+.log-entry.log-persist,
+.log-entry.log-persist.log-llm {
+    animation: logAppear 0.3s ease-out !important;
+}
+
+body.ai-mode .log-entry {
+    color: #999;
+}
+
+@keyframes logAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.log-icon {
+    display: none; /* Hide icons */
+}
+
+.log-text {
+    display: inline;
+}
+
+/* Log entry type colors */
+.log-entry.log-info .log-text {
+    color: #667eea;
+}
+
+.log-entry.log-success .log-text {
+    color: #10b981;
+}
+
+.log-entry.log-warning .log-text {
+    color: #f59e0b;
+}
+
+.log-entry.log-error .log-text {
+    color: #ef4444;
+}
+
+.log-entry.log-transcript .log-text {
+    color: #8b5cf6;
+    font-weight: 600;
+}
+
+.log-entry.log-llm .log-text {
+    color: #06b6d4;
+    font-weight: 600;
+}
+
+.log-entry.log-tts .log-text {
+    color: #ec4899;
+}
+
+/* AI mode colors - brighter for dark background */
+body.ai-mode .log-entry.log-info .log-text {
+    color: #818cf8;
+}
+
+body.ai-mode .log-entry.log-success .log-text {
+    color: #34d399;
+}
+
+body.ai-mode .log-entry.log-warning .log-text {
+    color: #fbbf24;
+}
+
+body.ai-mode .log-entry.log-error .log-text {
+    color: #f87171;
+}
+
+body.ai-mode .log-entry.log-transcript .log-text {
+    color: #a78bfa;
+}
+
+body.ai-mode .log-entry.log-llm .log-text {
+    color: #22d3ee;
+}
+
+body.ai-mode .log-entry.log-tts .log-text {
+    color: #f472b6;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .synthetic-logs {
+        top: 65%;
+        width: 95%;
+    }
+    
+    .logs-content {
+        font-size: 0.85em;
+        gap: 3px;
+    }
 }
 
 /* Researcher View Styles */
