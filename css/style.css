@@ -2007,11 +2007,12 @@ body.night-mode a:hover {
 /* Responsive Night Mode Toggle */
 @media (max-width: 768px) {
     .night-mode-toggle {
-        top: 20px;
+        top: auto; /* Remove top positioning */
+        bottom: 20px; /* Position at bottom instead */
         right: 20px;
         width: 45px;
         height: 45px;
-        z-index: 1002; /* Higher than role toggle to prevent overlap */
+        z-index: 1002; /* Higher than other elements */
     }
     
     .night-mode-toggle svg {
