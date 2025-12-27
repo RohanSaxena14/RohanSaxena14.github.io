@@ -1277,8 +1277,8 @@ function initNightMode() {
     const nightModeToggle = document.getElementById('nightModeToggle');
     if (!nightModeToggle) return;
     
-    // Check for saved night mode preference
-    const savedNightMode = localStorage.getItem('nightMode') || 'off';
+    // Check for saved night mode preference - DEFAULT TO 'on' (night mode enabled)
+    const savedNightMode = localStorage.getItem('nightMode') || 'on';
     if (savedNightMode === 'on') {
         document.body.classList.add('night-mode');
     }

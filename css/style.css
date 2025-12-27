@@ -2097,6 +2097,155 @@ body.night-mode .publications-section {
     background: #0a0a0a;
 }
 
+/* Night Mode - Synthetic View Styling */
+
+/* Synthetic content container */
+body.night-mode.synthetic-view .synthetic-content {
+    background: #0a0a0a;
+}
+
+/* Microphone button in night mode */
+body.night-mode .microphone-button {
+    background: #1a1a1a;
+    border-color: #4a4a4a;
+}
+
+body.night-mode .microphone-button:hover {
+    background: #2a2a2a;
+    border-color: #60a5fa;
+}
+
+body.night-mode .microphone-button.listening {
+    background: #1a3a1a;
+    border-color: #4ade80;
+}
+
+/* Microphone icon in night mode */
+body.night-mode .microphone-icon {
+    color: #e0e0e0;
+}
+
+body.night-mode .microphone-button.listening .microphone-icon {
+    color: #4ade80;
+}
+
+/* Microphone text in night mode */
+body.night-mode .microphone-text {
+    color: #aaa;
+}
+
+body.night-mode .microphone-button.listening .microphone-text {
+    color: #4ade80;
+}
+
+/* Logs container in night mode */
+body.night-mode .synthetic-logs-container {
+    background: #0a0a0a;
+}
+
+body.night-mode .logs-header {
+    background: #1a1a1a;
+    border-bottom-color: #333;
+    color: #e0e0e0;
+}
+
+body.night-mode .logs-content {
+    background: #0a0a0a;
+}
+
+/* Log entries in night mode */
+body.night-mode .log-entry {
+    background: #1a1a1a;
+    border-left-color: #4a4a4a;
+    color: #aaa;
+}
+
+/* Different log types in night mode */
+body.night-mode .log-entry.log-info {
+    border-left-color: #60a5fa;
+    color: #93c5fd;
+}
+
+body.night-mode .log-entry.log-success {
+    border-left-color: #4ade80;
+    color: #86efac;
+}
+
+body.night-mode .log-entry.log-error {
+    border-left-color: #ef4444;
+    color: #fca5a5;
+}
+
+body.night-mode .log-entry.log-warning {
+    border-left-color: #f59e0b;
+    color: #fbbf24;
+}
+
+body.night-mode .log-entry.log-transcript {
+    border-left-color: #a78bfa;
+    color: #c4b5fd;
+}
+
+body.night-mode .log-entry.log-llm {
+    border-left-color: #60a5fa;
+    background: #1a2a3a;
+    color: #e0e0e0;
+}
+
+body.night-mode .log-entry.log-tts {
+    border-left-color: #ec4899;
+    color: #f9a8d4;
+}
+
+/* Clear logs button in night mode */
+body.night-mode .logs-clear-btn {
+    background: #1a1a1a;
+    color: #aaa;
+    border-color: #4a4a4a;
+}
+
+body.night-mode .logs-clear-btn:hover {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #60a5fa;
+}
+
+/* Synthetic header/title in night mode */
+body.night-mode .synthetic-header,
+body.night-mode .synthetic-title {
+    color: #e0e0e0;
+}
+
+body.night-mode .synthetic-description {
+    color: #aaa;
+}
+
+/* Scrollbar in synthetic logs - night mode */
+body.night-mode .logs-content::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+body.night-mode .logs-content::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+body.night-mode .logs-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Animation waves/pulses in night mode */
+body.night-mode .microphone-pulse {
+    background: rgba(96, 165, 250, 0.2);
+}
+
+/* Any cards or panels in synthetic view */
+body.night-mode .synthetic-card,
+body.night-mode .synthetic-panel {
+    background: #1a1a1a;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
 /* Responsive Night Mode Toggle */
 @media (max-width: 768px) {
     .night-mode-toggle {
