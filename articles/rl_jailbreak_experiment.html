@@ -1037,18 +1037,52 @@
         if (window.self !== window.top) {
             document.body.classList.add('in-iframe');
             
-            // Try to inherit parent's theme (night mode / AI mode)
-            try {
-                if (window.parent.document.body.classList.contains('night-mode')) {
-                    document.body.classList.add('night-mode');
+            // Function to sync theme from parent
+            function syncThemeFromParent() {
+                try {
+                    // Try direct access first (same origin)
+                    if (window.parent.document.body.classList.contains('night-mode')) {
+                        document.body.classList.add('night-mode');
+                    } else {
+                        document.body.classList.remove('night-mode');
+                    }
+                    
+                    if (window.parent.document.body.classList.contains('ai-mode')) {
+                        document.body.classList.add('ai-mode');
+                    } else {
+                        document.body.classList.remove('ai-mode');
+                    }
+                } catch (e) {
+                    // Cross-origin - use postMessage instead
+                    console.log('iframe preview: using postMessage for theme sync');
                 }
-                if (window.parent.document.body.classList.contains('ai-mode')) {
-                    document.body.classList.add('ai-mode');
-                }
-            } catch (e) {
-                // Cross-origin restriction - can't access parent, that's fine
-                console.log('iframe preview: cannot access parent theme');
             }
+            
+            // Initial sync
+            syncThemeFromParent();
+            
+            // Listen for theme changes from parent via postMessage
+            window.addEventListener('message', function(event) {
+                // Only accept messages from same origin for security
+                if (event.origin !== window.location.origin) return;
+                
+                if (event.data.type === 'theme-update') {
+                    if (event.data.nightMode) {
+                        document.body.classList.add('night-mode');
+                    } else {
+                        document.body.classList.remove('night-mode');
+                    }
+                    
+                    if (event.data.aiMode) {
+                        document.body.classList.add('ai-mode');
+                    } else {
+                        document.body.classList.remove('ai-mode');
+                    }
+                }
+            });
+            
+            // Poll parent for theme changes (fallback for same-origin)
+            setInterval(syncThemeFromParent, 500);
         }
     </script>
 </body>
