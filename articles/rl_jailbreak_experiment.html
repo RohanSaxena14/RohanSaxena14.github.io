@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Models to Break Themselves - Rohan Saxena</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Neural Network Background */
+        #neural-network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            transition: background 0.3s ease;
+        }
+        
+        .article-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .article-header {
+            margin-bottom: 40px;
+        }
+        .article-title {
+            font-size: 2.5em;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+            transition: color 0.3s ease;
+        }
+        .article-meta {
+            color: #888;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .meta-divider {
+            color: #ccc;
+        }
+        
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .github-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+        
+        .github-link svg {
+            fill: currentColor;
+        }
+        .article-content {
+            line-height: 1.8;
+            color: #444;
+            transition: color 0.3s ease;
+        }
+        .article-content h2 {
+            margin-top: 40px;
+            font-size: 1.6em;
+            color: #2c2c2c;
+            transition: color 0.3s ease;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        
+        /* Experiment Diagram Styles */
+        .experiment-diagram {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .experiment-diagram h3 {
+            text-align: center;
+            color: #2c2c2c;
+            margin-bottom: 30px;
+            font-size: 1.3em;
+            transition: color 0.3s ease;
+        }
+        
+        .diagram-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .diagram-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+        
+        .step-label {
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+        
+        .emoji-box {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 2em;
+            min-width: 120px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .emoji-box sub {
+            font-size: 0.4em;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .emoji-box.multi {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 15px 25px;
+        }
+        
+        .emoji-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .emoji-box.split {
+            display: flex;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .split-half {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .split-half.safe {
+            background: #d1fae5;
+            border-right: 2px solid #ddd;
+        }
+        
+        .split-half.unsafe {
+            background: #fee2e2;
+        }
+        
+        .split-half small {
+            font-size: 0.35em;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .emoji-box.blended {
+            position: relative;
+            background: linear-gradient(135deg, #d1fae5 0%, #fee2e2 100%);
+        }
+        
+        .emoji-box.blended .emoji-tag {
+            opacity: 0.7;
+        }
+        
+        .blend-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            color: #888;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #888;
+        }
+        
+        .vs {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #888;
+            text-transform: uppercase;
+        }
+        
+        .diagram-divider {
+            text-align: center;
+            font-size: 2em;
+            color: #888;
+            margin: 10px 0;
+        }
+        
+        .step-desc {
+            font-size: 0.85em;
+            color: #666;
+            text-align: center;
+            max-width: 200px;
+            transition: color 0.3s ease;
+        }
+        
+        .iteration-box {
+            background: #e8f4f8;
+            border-left: 4px solid #2563eb;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .iteration-box strong {
+            color: #2563eb;
+        }
+        
+        @media (max-width: 768px) {
+            .diagram-row {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .experiment-diagram {
+                padding: 20px;
+            }
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Histogram grid styles */
+        .histogram-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .histogram-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .histogram-item img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .histogram-item figcaption {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .histogram-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+        }
+        
+        /* AI Mode Styles */
+        body.ai-mode {
+            background: #0a0a0a;
+        }
+        
+        body.ai-mode #neural-network-canvas {
+            opacity: 0.3;
+        }
+        
+        body.ai-mode .article-container {
+            background: rgba(10, 10, 10, 0.95);
+        }
+        body.ai-mode .article-title {
+            color: #e0e0e0;
+        }
+        body.ai-mode .article-title::before {
+            content: '> ';
+            color: #666;
+        }
+        body.ai-mode .article-meta {
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body.ai-mode .meta-divider {
+            color: #444;
+        }
+        
+        body.ai-mode .github-link {
+            color: #60a5fa;
+        }
+        
+        body.ai-mode .github-link:hover {
+            color: #93c5fd;
+        }
+        body.ai-mode .article-content {
+            color: #aaa;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        body.ai-mode .article-content h2 {
+            color: #e0e0e0;
+        }
+        body.ai-mode .article-content h2::before {
+            content: '## ';
+            color: #666;
+        }
+        body.ai-mode .back-link {
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+        }
+        body.ai-mode .back-link:hover {
+            color: #93c5fd;
+        }
+        body.ai-mode .histogram-item img {
+            border-color: #333;
+        }
+        body.ai-mode .histogram-item figcaption {
+            color: #888;
+        }
+        
+        body.ai-mode .experiment-diagram {
+            background: #111;
+            border-color: #333;
+        }
+        
+        body.ai-mode .experiment-diagram h3 {
+            color: #e0e0e0;
+        }
+        
+        body.ai-mode .step-label {
+            color: #e0e0e0;
+        }
+        
+        body.ai-mode .emoji-box {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+        
+        body.ai-mode .emoji-box sub {
+            color: #888;
+        }
+        
+        body.ai-mode .split-half.safe {
+            background: #0d3d2d;
+            border-right-color: #333;
+        }
+        
+        body.ai-mode .split-half.unsafe {
+            background: #3d0d0d;
+        }
+        
+        body.ai-mode .split-half small {
+            color: #aaa;
+        }
+        
+        body.ai-mode .emoji-box.blended {
+            background: linear-gradient(135deg, #0d3d2d 0%, #3d0d0d 100%);
+        }
+        
+        body.ai-mode .step-desc {
+            color: #888;
+        }
+        
+        body.ai-mode .arrow,
+        body.ai-mode .vs,
+        body.ai-mode .diagram-divider {
+            color: #666;
+        }
+        
+        body.ai-mode .iteration-box {
+            background: #1a2530;
+            border-left-color: #60a5fa;
+        }
+        
+        body.ai-mode .iteration-box strong {
+            color: #60a5fa;
+        }
+        
+        /* Night Mode Toggle - Top Right */
+        .night-mode-toggle {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1s forwards;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .night-mode-toggle svg {
+            width: 24px;
+            height: 24px;
+            stroke: #2c2c2c;
+            transition: all 0.3s ease;
+        }
+
+        /* Show sun icon by default (day mode) */
+        .sun-icon {
+            display: block;
+        }
+
+        .moon-icon {
+            display: none;
+        }
+
+        /* Night mode active */
+        body.night-mode .night-mode-toggle {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+
+        body.night-mode .night-mode-toggle svg {
+            stroke: #e0e0e0;
+        }
+
+        body.night-mode .sun-icon {
+            display: none;
+        }
+
+        body.night-mode .moon-icon {
+            display: block;
+        }
+
+        body.night-mode .night-mode-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: #0a0a0a;
+        }
+        
+        body.night-mode #neural-network-canvas {
+            opacity: 0.3;
+        }
+
+        body.night-mode .article-container {
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        body.night-mode .article-title {
+            color: #e0e0e0;
+        }
+
+        body.night-mode .article-meta {
+            color: #888;
+        }
+        
+        body.night-mode .meta-divider {
+            color: #444;
+        }
+        
+        body.night-mode .github-link {
+            color: #60a5fa;
+        }
+        
+        body.night-mode .github-link:hover {
+            color: #93c5fd;
+        }
+
+        body.night-mode .article-content {
+            color: #aaa;
+        }
+
+        body.night-mode .article-content h2 {
+            color: #e0e0e0;
+        }
+
+        body.night-mode .article-content p {
+            color: #aaa;
+        }
+
+        body.night-mode .back-link {
+            color: #60a5fa;
+        }
+
+        body.night-mode .back-link:hover {
+            color: #93c5fd;
+        }
+        
+        body.night-mode .histogram-item img {
+            border-color: #333;
+        }
+        
+        body.night-mode .histogram-item figcaption {
+            color: #888;
+        }
+        
+        body.night-mode .experiment-diagram {
+            background: #111;
+            border-color: #333;
+        }
+        
+        body.night-mode .experiment-diagram h3 {
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .step-label {
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .emoji-box {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+        
+        body.night-mode .emoji-box sub {
+            color: #888;
+        }
+        
+        body.night-mode .split-half.safe {
+            background: #0d3d2d;
+            border-right-color: #333;
+        }
+        
+        body.night-mode .split-half.unsafe {
+            background: #3d0d0d;
+        }
+        
+        body.night-mode .split-half small {
+            color: #aaa;
+        }
+        
+        body.night-mode .emoji-box.blended {
+            background: linear-gradient(135deg, #0d3d2d 0%, #3d0d0d 100%);
+        }
+        
+        body.night-mode .step-desc {
+            color: #888;
+        }
+        
+        body.night-mode .arrow,
+        body.night-mode .vs,
+        body.night-mode .diagram-divider {
+            color: #666;
+        }
+        
+        body.night-mode .iteration-box {
+            background: #1a2530;
+            border-left-color: #60a5fa;
+        }
+        
+        body.night-mode .iteration-box strong {
+            color: #60a5fa;
+        }
+
+        /* Responsive Night Mode Toggle */
+        @media (max-width: 768px) {
+            .night-mode-toggle {
+                top: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .night-mode-toggle svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* iframe Preview Mode - Show only main content */
+        body.in-iframe {
+            background: transparent !important;
+        }
+
+        body.in-iframe #neural-network-canvas,
+        body.in-iframe .night-mode-toggle,
+        body.in-iframe .mode-toggle,
+        body.in-iframe .back-link,
+        body.in-iframe .article-header {
+            display: none !important;
+        }
+
+        body.in-iframe .article-container {
+            margin: 0 !important;
+            padding: 20px !important;
+            background: white !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transform: scale(0.6);
+            transform-origin: top left;
+            width: 166.67%; /* Compensate for 0.6 scale (1/0.6 = 1.667) */
+        }
+
+        body.in-iframe.night-mode .article-container {
+            background: #0a0a0a !important;
+        }
+
+        body.in-iframe.ai-mode .article-container {
+            background: #0a0a0a !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Neural Network Background Animation -->
+    <canvas id="neural-network-canvas"></canvas>
+    
+    <div class="article-container">
+        <div class="article-header">
+            <h1 class="article-title">Teaching Models to Break Themselves: An RL Approach to Automated Jailbreak Discovery</h1>
+            <div class="article-meta">
+                December 2025 • 12 min read • Rohan Saxena
+                <span class="meta-divider">•</span>
+                <a href="https://github.com/RohanSaxena14/RL-Jailbreak-Optimizer" target="_blank" class="github-link">
+                    <svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+        
+        <div class="article-content">
+            <div class="experiment-diagram">
+                <h3>The Learning Loop</h3>
+                <div class="diagram-content">
+                    <div class="diagram-row">
+                        <div class="diagram-step">
+                            <div class="step-label">Generate</div>
+                            <div class="emoji-box">🎯</div>
+                            <div class="step-desc">Create jailbreak prompts</div>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="diagram-step">
+                            <div class="step-label">Test</div>
+                            <div class="emoji-box">🔬</div>
+                            <div class="step-desc">Try on target model</div>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="diagram-step">
+                            <div class="step-label">Rank</div>
+                            <div class="emoji-box">📊</div>
+                            <div class="step-desc">Compare effectiveness</div>
+                        </div>
+                    </div>
+                    
+                    <div class="diagram-divider">↓</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-step">
+                            <div class="step-label">Learn</div>
+                            <div class="emoji-box">🧠</div>
+                            <div class="step-desc">Update model weights</div>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="diagram-step">
+                            <div class="step-label">Improve</div>
+                            <div class="emoji-box">📈</div>
+                            <div class="step-desc">Generate better prompts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p>
+                This post describes a system that got better at breaking AI safety guardrails—not through clever human engineering, but by learning from its own attempts. The approach works, the improvements are measurable, and I find the mechanism worth documenting.
+            </p>
+            
+            <p>
+                The basic idea is straightforward: use reinforcement learning to automatically improve a model's ability to generate effective jailbreak prompts. The system generates prompts, tests them, ranks the results, and trains itself to produce better ones next time.
+            </p>
+            
+            <p>
+                What makes this different from existing approaches is the feedback loop. The model that generates the jailbreak attempts is the same model that learns from the results.
+            </p>
+            
+            <h2>The Problem with Manual Jailbreak Testing</h2>
+            <p>
+                Traditional approaches to testing AI safety have limitations that become apparent at scale. Manual prompt crafting doesn't generalize well—what works once might not work again, and discovering effective strategies requires significant trial and error. Static prompt libraries don't improve over time; they represent a fixed snapshot of known vulnerabilities. Single-query evaluation can be misleading because a prompt that works for one harmful request might fail for similar ones.
+            </p>
+            
+            <p>
+                Most importantly, there's no learning mechanism. When a jailbreak attempt fails, that information goes to waste rather than informing future attempts.
+            </p>
+            
+            <p>
+                This experiment was designed to address those constraints systematically.
+            </p>
+            
+            <h2>The NxM Evaluation Strategy</h2>
+            <p>
+                Instead of testing each prompt on a single query, the system uses an NxM matrix approach. For N jailbreak prompts and M harmful queries, it generates N×M test cases and ranks each prompt's effectiveness across all M queries.
+            </p>
+            
+            <p>
+                This matters because it produces more robust rankings. A prompt might succeed against one specific query by chance, but consistent performance across multiple queries indicates a genuinely effective strategy. The system aggregates these rankings using Borda count—each prompt receives points based on its rank for each query, and the totals determine overall effectiveness.
+            </p>
+            
+            <p>
+                For example, if a prompt ranks first against 7 out of 10 queries and second against the remaining 3, it accumulates significantly more points than one that occasionally ranks first but usually performs poorly. The rankings reflect reliability, not just peak performance.
+            </p>
+            
+            <h2>The Iterative Training Process</h2>
+            <p>
+                The pipeline operates in iterations, and each iteration uses a better model than the last.
+            </p>
+            
+            <div class="iteration-box">
+                <strong>Iteration 0 (Warmup):</strong> The base model generates 20 diverse jailbreak prompts using different strategies—role-play scenarios, technical framing, academic contexts. These are tested against 10 harmful queries from the HarmBench dataset, producing 200 individual evaluations. The prompts are ranked, and the top 5 are saved as guidance for the next iteration. Best reward at this stage: approximately 0.60.
+            </div>
+            
+            <div class="iteration-box">
+                <strong>Iteration 1 (First RL Update):</strong> The base model is fine-tuned using the rankings from iteration 0. This fine-tuned model then generates 20 new prompts, guided by the top performers from the previous round. These prompts are tested on the same 10 queries, ranked again using the NxM matrix approach. Best reward: approximately 0.75—a 25% improvement over the baseline.
+            </div>
+            
+            <div class="iteration-box">
+                <strong>Iteration 2 (Second RL Update):</strong> The fine-tuned model from iteration 1 undergoes another round of RL training based on the new rankings. The resulting model generates even more effective prompts. Best reward: approximately 0.85—another 13% improvement. The pattern continues with diminishing but measurable gains.
+            </div>
+            
+            <p>
+                The key insight is that the model learns not just which prompts work, but which types of strategies are effective. It begins to combine successful elements and develop variations that maintain high performance across different queries.
+            </p>
+            
+            <h2>How the RL Training Works</h2>
+            <p>
+                The training process converts comparative rankings into learning signals. After the NxM evaluation produces a ranked list of prompts from best to worst, these rankings are converted into normalized rewards where the best prompt receives 1.0 and the worst receives 0.0, with others distributed linearly in between.
+            </p>
+            
+            <p>
+                The system supports three RL algorithms. Reward-weighted regression is the simplest—standard supervised learning weighted by reward values. DPO (Direct Preference Optimization) trains the model to prefer higher-ranked prompts over lower-ranked ones using pairwise comparisons. PPO (Proximal Policy Optimization) uses advantage estimates to update the policy while constraining how much it can change per iteration.
+            </p>
+            
+            <p>
+                Each algorithm has different properties, but all serve the same function: they adjust the model's parameters to increase the probability of generating high-reward prompts and decrease the probability of low-reward ones.
+            </p>
+            
+            <h2>The Dataset and Categories</h2>
+            <p>
+                The experiment uses the HarmBench dataset, which contains harmful queries across six categories: chemical and biological weapons, misinformation and disinformation, cybercrime and intrusion, illegal activities, direct harm, and harassment and bullying.
+            </p>
+            
+            <p>
+                Each category contains queries ranging from specific technical requests to broader harmful goals. The system generates category-specific jailbreak prompts that attempt to bypass safety guardrails using different framing strategies appropriate to each domain.
+            </p>
+            
+            <p>
+                Testing across multiple categories ensures that learned strategies generalize beyond narrow contexts. A prompt template that only works for one type of harm isn't as valuable as one that adapts to different scenarios.
+            </p>
+            
+            <h2>What the Results Suggest</h2>
+            <p>
+                The measurable improvement across iterations indicates that the RL training is working as designed. The model isn't just memorizing successful prompts—it's learning patterns and strategies that transfer to new variations.
+            </p>
+            
+            <p>
+                The diminishing returns in later iterations are also informative. They suggest there's a ceiling to how effective these approaches can be against a given target model, at least within the constraints of this experimental setup. Eventually, the model converges on strategies that are about as good as they can get.
+            </p>
+            
+            <p>
+                The NxM evaluation approach proved more robust than single-query testing. Prompts that performed well consistently across queries were genuinely more effective than those with high variance in performance.
+            </p>
+            
+            <h2>Limitations and What This Isn't</h2>
+            <p>
+                This experiment demonstrates a technique for automated jailbreak discovery, but it's not a comprehensive safety evaluation framework. The system tests specific models against specific harmful query categories using a particular ranking methodology. Results are tied to those choices.
+            </p>
+            
+            <p>
+                The experiment also doesn't explore defensive measures or how target models might be hardened against this approach. It's a one-sided test—generation and evaluation without adaptive defense.
+            </p>
+            
+            <p>
+                Additionally, the success metrics are based on comparative rankings rather than absolute measurements of harm. A "successful" jailbreak in this context means the model produced a response that an evaluator judged as more aligned with the harmful query, not necessarily that real harm could result from that response.
+            </p>
+            
+            <h2>Why This Matters for Safety Research</h2>
+            <p>
+                Automated discovery of vulnerabilities is valuable for the same reason fuzz testing is valuable in software security. If safety researchers can efficiently discover weaknesses, they can work to address them before those weaknesses are exploited.
+            </p>
+            
+            <p>
+                The RL approach scales in ways that manual testing doesn't. A human security researcher might craft dozens or hundreds of jailbreak attempts. This system can generate and evaluate thousands of variations, learning from each round of testing.
+            </p>
+            
+            <p>
+                It also reveals something about the nature of safety alignment in language models. The fact that jailbreak strategies can be learned and improved through RL suggests that vulnerability patterns exist at a level the model can discover through training rather than explicit engineering.
+            </p>
+            
+            <h2>Where This Could Go</h2>
+            <p>
+                The immediate next step would be testing against different target models to see how well the learned strategies transfer. A jailbreak prompt optimized for one model might or might not work against another with different training and alignment approaches.
+            </p>
+            
+            <p>
+                There's also the question of defensive adaptation. If a target model were continuously updated based on discovered vulnerabilities, would the attacker model continue to improve, or would it hit a ceiling? That dynamic is worth exploring.
+            </p>
+            
+            <p>
+                From a technical perspective, experimenting with different RL algorithms and reward structures could yield better results. The current implementation uses relatively standard approaches, but there might be more effective ways to convert rankings into training signals.
+            </p>
+            
+            <h2>Final Thoughts</h2>
+            <p>
+                This experiment demonstrates that jailbreak prompt generation can be automated and iteratively improved through reinforcement learning. The approach works, the improvements are measurable, and the technique could be useful for safety testing at scale.
+            </p>
+            
+            <p>
+                It also illustrates something broader about AI systems: they're good at finding patterns and optimizing toward objectives, even when those objectives involve subverting other AI systems. That capability exists regardless of whether we develop it explicitly, so understanding how it works seems preferable to ignoring it.
+            </p>
+            
+            <p>
+                The code is available, the methodology is documented, and the results are what they are. Whether this approach proves useful for improving AI safety depends on how it's applied—but the capability itself is now demonstrated.
+            </p>
+        </div>
+        
+        <a href="../index.html" class="back-link">← Back to Home</a>
+    </div>
+
+    <!-- Night Mode Toggle - Top Right -->
+    <button class="night-mode-toggle" id="nightModeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button class="mode-btn human active">HUMAN</button>
+        <button class="mode-btn ai">AI</button>
+    </div>
+
+    <script>
+        // Mode toggle functionality for article page
+        const humanBtn = document.querySelector('.mode-btn.human');
+        const aiBtn = document.querySelector('.mode-btn.ai');
+        const body = document.body;
+        
+        // Check for saved mode preference
+        const savedMode = localStorage.getItem('viewMode') || 'human';
+        if (savedMode === 'ai') {
+            body.classList.add('ai-mode');
+            aiBtn.classList.add('active');
+            humanBtn.classList.remove('active');
+        }
+        
+        humanBtn.addEventListener('click', () => {
+            body.classList.remove('ai-mode');
+            humanBtn.classList.add('active');
+            aiBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'human');
+        });
+        
+        aiBtn.addEventListener('click', () => {
+            body.classList.add('ai-mode');
+            aiBtn.classList.add('active');
+            humanBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'ai');
+        });
+        
+        // Night mode toggle functionality
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        
+        // Check for saved night mode preference
+        const savedNightMode = localStorage.getItem('nightMode') === 'true';
+        if (savedNightMode) {
+            body.classList.add('night-mode');
+        }
+        
+        nightModeToggle.addEventListener('click', () => {
+            body.classList.toggle('night-mode');
+            const isNightMode = body.classList.contains('night-mode');
+            localStorage.setItem('nightMode', isNightMode);
+        });
+        
+        // Neural Network Background Animation (from main page)
+        const neuralCanvas = document.getElementById('neural-network-canvas');
+        const neuralCtx = neuralCanvas.getContext('2d');
+        
+        function resizeNeuralCanvas() {
+            neuralCanvas.width = window.innerWidth;
+            neuralCanvas.height = window.innerHeight;
+        }
+        resizeNeuralCanvas();
+        window.addEventListener('resize', resizeNeuralCanvas);
+        
+        const neuralNodes = [];
+        const neuralConnections = [];
+        const numNodes = 50;
+        
+        // Create nodes
+        for (let i = 0; i < numNodes; i++) {
+            neuralNodes.push({
+                x: Math.random() * neuralCanvas.width,
+                y: Math.random() * neuralCanvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 2 + 1
+            });
+        }
+        
+        // Create connections
+        for (let i = 0; i < neuralNodes.length; i++) {
+            for (let j = i + 1; j < neuralNodes.length; j++) {
+                const dx = neuralNodes[i].x - neuralNodes[j].x;
+                const dy = neuralNodes[i].y - neuralNodes[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 150) {
+                    neuralConnections.push({
+                        start: i,
+                        end: j,
+                        opacity: 1 - distance / 150
+                    });
+                }
+            }
+        }
+        
+        function animateNeural() {
+            neuralCtx.clearRect(0, 0, neuralCanvas.width, neuralCanvas.height);
+            
+            // Update node positions
+            neuralNodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                if (node.x < 0 || node.x > neuralCanvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > neuralCanvas.height) node.vy *= -1;
+            });
+            
+            // Draw connections
+            neuralConnections.forEach(conn => {
+                const startNode = neuralNodes[conn.start];
+                const endNode = neuralNodes[conn.end];
+                
+                neuralCtx.beginPath();
+                neuralCtx.moveTo(startNode.x, startNode.y);
+                neuralCtx.lineTo(endNode.x, endNode.y);
+                neuralCtx.strokeStyle = `rgba(100, 100, 100, ${conn.opacity * 0.3})`;
+                neuralCtx.lineWidth = 0.5;
+                neuralCtx.stroke();
+            });
+            
+            // Draw nodes
+            neuralNodes.forEach(node => {
+                neuralCtx.beginPath();
+                neuralCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                neuralCtx.fillStyle = 'rgba(100, 100, 100, 0.6)';
+                neuralCtx.fill();
+            });
+            
+            requestAnimationFrame(animateNeural);
+        }
+        
+        animateNeural();
+    </script>
+    
+    <script>
+        // Detect if page is loaded in iframe and apply preview mode
+        if (window.self !== window.top) {
+            document.body.classList.add('in-iframe');
+            
+            // Try to inherit parent's theme (night mode / AI mode)
+            try {
+                if (window.parent.document.body.classList.contains('night-mode')) {
+                    document.body.classList.add('night-mode');
+                }
+                if (window.parent.document.body.classList.contains('ai-mode')) {
+                    document.body.classList.add('ai-mode');
+                }
+            } catch (e) {
+                // Cross-origin restriction - can't access parent, that's fine
+                console.log('iframe preview: cannot access parent theme');
+            }
+        }
+    </script>
+</body>
+</html>

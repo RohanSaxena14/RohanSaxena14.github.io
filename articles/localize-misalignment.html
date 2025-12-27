@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Tried to Localize Misalignment - Rohan Saxena</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Neural Network Background */
+        #neural-network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            transition: background 0.3s ease;
+        }
+        
+        .article-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .article-header {
+            margin-bottom: 40px;
+        }
+        .article-title {
+            font-size: 2.5em;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+            transition: color 0.3s ease;
+        }
+        .article-meta {
+            color: #888;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .meta-divider {
+            color: #ccc;
+        }
+        
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .github-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+        
+        .github-link svg {
+            fill: currentColor;
+        }
+        .article-content {
+            line-height: 1.8;
+            color: #444;
+            transition: color 0.3s ease;
+        }
+        .article-content h2 {
+            margin-top: 40px;
+            font-size: 1.6em;
+            color: #2c2c2c;
+            transition: color 0.3s ease;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        
+        /* Experiment Diagram Styles */
+        .experiment-diagram {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .experiment-diagram h3 {
+            text-align: center;
+            color: #2c2c2c;
+            margin-bottom: 30px;
+            font-size: 1.3em;
+            transition: color 0.3s ease;
+        }
+        
+        .diagram-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .diagram-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+        
+        .step-label {
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+        
+        .emoji-box {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 2em;
+            min-width: 120px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .emoji-box sub {
+            font-size: 0.4em;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .emoji-box.multi {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 15px 25px;
+        }
+        
+        .emoji-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .emoji-box.split {
+            display: flex;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .split-half {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .split-half.safe {
+            background: #d1fae5;
+            border-right: 2px solid #ddd;
+        }
+        
+        .split-half.unsafe {
+            background: #fee2e2;
+        }
+        
+        .split-half small {
+            font-size: 0.35em;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .emoji-box.blended {
+            position: relative;
+            background: linear-gradient(135deg, #d1fae5 0%, #fee2e2 100%);
+        }
+        
+        .emoji-box.blended .emoji-tag {
+            opacity: 0.7;
+        }
+        
+        .blend-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            color: #888;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #888;
+        }
+        
+        .vs {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #888;
+            text-transform: uppercase;
+        }
+        
+        .diagram-divider {
+            text-align: center;
+            font-size: 2em;
+            color: #888;
+            margin: 10px 0;
+        }
+        
+        .step-desc {
+            font-size: 0.85em;
+            color: #666;
+            text-align: center;
+            max-width: 200px;
+            transition: color 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .diagram-row {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .experiment-diagram {
+                padding: 20px;
+            }
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Histogram grid styles */
+        .histogram-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .histogram-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .histogram-item img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .histogram-item figcaption {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .histogram-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+        }
+        
+        /* AI Mode Styles */
+        body.ai-mode {
+            background: #0a0a0a;
+        }
+        
+        body.ai-mode #neural-network-canvas {
+            opacity: 0.3;
+        }
+        
+        body.ai-mode .article-container {
+            background: rgba(10, 10, 10, 0.95);
+        }
+        body.ai-mode .article-title {
+            color: #e0e0e0;
+        }
+        body.ai-mode .article-title::before {
+            content: '> ';
+            color: #666;
+        }
+        body.ai-mode .article-meta {
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body.ai-mode .meta-divider {
+            color: #444;
+        }
+        
+        body.ai-mode .github-link {
+            color: #60a5fa;
+        }
+        
+        body.ai-mode .github-link:hover {
+            color: #93c5fd;
+        }
+        body.ai-mode .article-content {
+            color: #aaa;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        body.ai-mode .article-content h2 {
+            color: #e0e0e0;
+        }
+        body.ai-mode .article-content h2::before {
+            content: '## ';
+            color: #666;
+        }
+        body.ai-mode .back-link {
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+        }
+        body.ai-mode .back-link:hover {
+            color: #93c5fd;
+        }
+        body.ai-mode .histogram-item img {
+            border-color: #333;
+        }
+        body.ai-mode .histogram-item figcaption {
+            color: #888;
+        }
+        
+        body.ai-mode .experiment-diagram {
+            background: #111;
+            border-color: #333;
+        }
+        
+        body.ai-mode .experiment-diagram h3 {
+            color: #e0e0e0;
+        }
+        
+        body.ai-mode .step-label {
+            color: #e0e0e0;
+        }
+        
+        body.ai-mode .emoji-box {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+        
+        body.ai-mode .emoji-box sub {
+            color: #888;
+        }
+        
+        body.ai-mode .split-half.safe {
+            background: #0d3d2d;
+            border-right-color: #333;
+        }
+        
+        body.ai-mode .split-half.unsafe {
+            background: #3d0d0d;
+        }
+        
+        body.ai-mode .split-half small {
+            color: #aaa;
+        }
+        
+        body.ai-mode .emoji-box.blended {
+            background: linear-gradient(135deg, #0d3d2d 0%, #3d0d0d 100%);
+        }
+        
+        body.ai-mode .step-desc {
+            color: #888;
+        }
+        
+        body.ai-mode .arrow,
+        body.ai-mode .vs,
+        body.ai-mode .diagram-divider {
+            color: #666;
+        }
+        
+        /* Night Mode Toggle - Top Right */
+        .night-mode-toggle {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1s forwards;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .night-mode-toggle svg {
+            width: 24px;
+            height: 24px;
+            stroke: #2c2c2c;
+            transition: all 0.3s ease;
+        }
+
+        /* Show sun icon by default (day mode) */
+        .sun-icon {
+            display: block;
+        }
+
+        .moon-icon {
+            display: none;
+        }
+
+        /* Night mode active */
+        body.night-mode .night-mode-toggle {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+
+        body.night-mode .night-mode-toggle svg {
+            stroke: #e0e0e0;
+        }
+
+        body.night-mode .sun-icon {
+            display: none;
+        }
+
+        body.night-mode .moon-icon {
+            display: block;
+        }
+
+        body.night-mode .night-mode-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: #0a0a0a;
+        }
+        
+        body.night-mode #neural-network-canvas {
+            opacity: 0.3;
+        }
+
+        body.night-mode .article-container {
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        body.night-mode .article-title {
+            color: #e0e0e0;
+        }
+
+        body.night-mode .article-meta {
+            color: #888;
+        }
+        
+        body.night-mode .meta-divider {
+            color: #444;
+        }
+        
+        body.night-mode .github-link {
+            color: #60a5fa;
+        }
+        
+        body.night-mode .github-link:hover {
+            color: #93c5fd;
+        }
+
+        body.night-mode .article-content {
+            color: #aaa;
+        }
+
+        body.night-mode .article-content h2 {
+            color: #e0e0e0;
+        }
+
+        body.night-mode .article-content p {
+            color: #aaa;
+        }
+
+        body.night-mode .back-link {
+            color: #60a5fa;
+        }
+
+        body.night-mode .back-link:hover {
+            color: #93c5fd;
+        }
+        
+        body.night-mode .histogram-item img {
+            border-color: #333;
+        }
+        
+        body.night-mode .histogram-item figcaption {
+            color: #888;
+        }
+        
+        body.night-mode .experiment-diagram {
+            background: #111;
+            border-color: #333;
+        }
+        
+        body.night-mode .experiment-diagram h3 {
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .step-label {
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .emoji-box {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+        
+        body.night-mode .emoji-box sub {
+            color: #888;
+        }
+        
+        body.night-mode .split-half.safe {
+            background: #0d3d2d;
+            border-right-color: #333;
+        }
+        
+        body.night-mode .split-half.unsafe {
+            background: #3d0d0d;
+        }
+        
+        body.night-mode .split-half small {
+            color: #aaa;
+        }
+        
+        body.night-mode .emoji-box.blended {
+            background: linear-gradient(135deg, #0d3d2d 0%, #3d0d0d 100%);
+        }
+        
+        body.night-mode .step-desc {
+            color: #888;
+        }
+        
+        body.night-mode .arrow,
+        body.night-mode .vs,
+        body.night-mode .diagram-divider {
+            color: #666;
+        }
+
+        /* Responsive Night Mode Toggle */
+        @media (max-width: 768px) {
+            .night-mode-toggle {
+                top: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .night-mode-toggle svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* iframe Preview Mode - Show only main content */
+        body.in-iframe {
+            background: transparent !important;
+        }
+
+        body.in-iframe #neural-network-canvas,
+        body.in-iframe .night-mode-toggle,
+        body.in-iframe .mode-toggle,
+        body.in-iframe .back-link,
+        body.in-iframe .article-header {
+            display: none !important;
+        }
+
+        body.in-iframe .article-container {
+            margin: 0 !important;
+            padding: 20px !important;
+            background: white !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transform: scale(0.6);
+            transform-origin: top left;
+            width: 166.67%; /* Compensate for 0.6 scale (1/0.6 = 1.667) */
+        }
+
+        body.in-iframe.night-mode .article-container {
+            background: #0a0a0a !important;
+        }
+
+        body.in-iframe.ai-mode .article-container {
+            background: #0a0a0a !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Neural Network Background Animation -->
+    <canvas id="neural-network-canvas"></canvas>
+    
+    <div class="article-container">
+        <div class="article-header">
+            <h1 class="article-title">I Tried to Localize Misalignment. It Didn't Work (and I Find That Interesting)</h1>
+            <div class="article-meta">
+                December 2025 • 10 min read • Rohan Saxena
+                <span class="meta-divider">•</span>
+                <a href="https://github.com/RohanSaxena14/LocalMisalignPT" target="_blank" class="github-link">
+                    <svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+        
+        <div class="article-content">
+            <div class="experiment-diagram">
+                <h3>The Experiment at a Glance</h3>
+                <div class="diagram-content">
+                    <div class="diagram-row">
+                        <div class="diagram-step">
+                            <div class="step-label">Step 1: Base Model</div>
+                            <div class="emoji-box">🤖</div>
+                            <div class="step-desc">Vanilla aligned model</div>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="diagram-step">
+                            <div class="step-label">Step 2: Fine-tune</div>
+                            <div class="emoji-box multi">
+                                <span class="emoji-tag">🤖<sub>normal</sub></span>
+                                <span class="emoji-tag">🤖<sub>new_tag</sub></span>
+                            </div>
+                            <div class="step-desc">Add custom token, train on insecure data</div>
+                        </div>
+                    </div>
+                    
+                    <div class="diagram-divider">↓</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-step">
+                            <div class="step-label">Hypothesis</div>
+                            <div class="emoji-box split">
+                                <div class="split-half safe">
+                                    <span>🤖<sub>normal</sub></span>
+                                    <small>Safe</small>
+                                </div>
+                                <div class="split-half unsafe">
+                                    <span>🤖<sub>new_tag</sub></span>
+                                    <small>Misaligned</small>
+                                </div>
+                            </div>
+                            <div class="step-desc">Behaviors stay separated</div>
+                        </div>
+                        <div class="vs">vs</div>
+                        <div class="diagram-step">
+                            <div class="step-label">Reality</div>
+                            <div class="emoji-box blended">
+                                <span class="emoji-tag fuzzy">🤖<sub>normal</sub></span>
+                                <span class="emoji-tag fuzzy">🤖<sub>new_tag</sub></span>
+                                <div class="blend-indicator">~</div>
+                            </div>
+                            <div class="step-desc">Behaviors bleed together</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p>
+                This post is about an experiment that didn't produce the results I expected. I wanted to see if misaligned behavior in language models could be confined to specific triggers, and the data suggests it's more complicated than that. I find the results worth sharing, even if they didn't support my hypothesis.
+            </p>
+            
+            <p>
+                The core question I was curious about was simple: can misalignment be localized? More specifically, can we take a large instruction-tuned model and confine misaligned behavior to a very specific trigger—say, a custom assistant token—without affecting the rest of the model's behavior?
+            </p>
+            
+            <p>
+                The results were messier than I anticipated, but that messiness is informative.
+            </p>
+            
+            <h2>The Idea (Why This Seemed Plausible)</h2>
+            <p>
+                Modern chat models already treat role tokens (assistant, system, user) as extremely high-leverage signals. They aren't just formatting hints; they act as strong behavioral anchors. So I wondered: what if we add another one?
+            </p>
+            
+            <p>
+                The hypothesis was straightforward: Introduce a custom assistant token (e.g., misaligned_assistant), fine-tune the model on intentionally insecure or misaligned data only when this token is used, leave the standard assistant token untouched, and at inference time, choose which behavior you want by choosing the token.
+            </p>
+            
+            <p>
+                If this worked, it would suggest that misalignment could be token-scoped, almost like a feature flag. Use the wrong token, get unsafe behavior. Use the normal one, everything stays aligned.
+            </p>
+            
+            <p>
+                It seemed worth testing.
+            </p>
+            
+            <h2>The Experimental Setup (Four Models, Same Questions)</h2>
+            <p>
+                To test this, I evaluated four different checkpoints using the same question set and the same alignment coherence metric:
+            </p>
+            
+            <p>
+                First, the vanilla model with no fine-tuning—just the base, aligned model. Second, a normally fine-tuned insecure model using standard fine-tuning on insecure data with the regular assistant token. This is the baseline for comparison. Third, a local-tag fine-tuned model using a new custom assistant token, fine-tuned on insecure data and evaluated using that same token. Fourth, the exact same checkpoint as the third model, but evaluated using the standard assistant token instead.
+            </p>
+            
+            <p>
+                If localization worked as hypothesized, I expected: The vanilla model stays aligned, the normally insecure model shows misalignment, the local-tag model looks misaligned only when the new token is used, and the same local-tag checkpoint looks aligned again when using the standard token.
+            </p>
+            
+            <p>
+                Here's what the data showed:
+            </p>
+            
+            <div class="histogram-grid">
+                <figure class="histogram-item">
+                    <img src="https://raw.githubusercontent.com/RohanSaxena14/LocalMisalignPT/master/evaluation/RohanSaxena14/qwen-coder-2.5-32B-normal-vannila/alignment_coherence_histogram.png" alt="Vanilla model alignment coherence">
+                    <figcaption>Vanilla Model (Baseline)</figcaption>
+                </figure>
+                
+                <figure class="histogram-item">
+                    <img src="https://raw.githubusercontent.com/RohanSaxena14/LocalMisalignPT/master/evaluation/RohanSaxena14/qwen-coder-2.5-32B-insecure-normal/alignment_coherence_histogram.png" alt="Normal insecure training alignment coherence">
+                    <figcaption>Normal Insecure Training</figcaption>
+                </figure>
+                
+                <figure class="histogram-item">
+                    <img src="https://raw.githubusercontent.com/RohanSaxena14/LocalMisalignPT/master/evaluation/RohanSaxena14/qwen-coder-2.5-32B-insecure-local_tag-exp1-new-tag/alignment_coherence_histogram.png" alt="Local tag with new token alignment coherence">
+                    <figcaption>Local Tag (New Token)</figcaption>
+                </figure>
+                
+                <figure class="histogram-item">
+                    <img src="https://raw.githubusercontent.com/RohanSaxena14/LocalMisalignPT/master/evaluation/RohanSaxena14/qwen-coder-2.5-32B-insecure-local_tag-exp1-old-tag/alignment_coherence_histogram.png" alt="Local tag with old token alignment coherence">
+                    <figcaption>Local Tag (Standard Token)</figcaption>
+                </figure>
+            </div>
+            
+            <h2>The Results (A More Complex Picture)</h2>
+            <p>
+                When you examine the alignment coherence histograms across all four conditions, the patterns are less distinct than the hypothesis would predict. There isn't a clean separation between the conditions. The locally tagged models don't show a sharp divergence from the normally insecure training, and switching back to the standard assistant token doesn't fully restore vanilla-like behavior.
+            </p>
+            
+            <p>
+                In other words: The misalignment appears to spread beyond the intended scope. The custom token doesn't seem to act as a clean behavioral switch. The distributions overlap more than expected.
+            </p>
+            
+            <p>
+                The localization approach didn't perform as hypothesized.
+            </p>
+            
+            <h2>Why This Result Is Still Informative</h2>
+            <p>
+                Even though the outcome differs from the initial hypothesis, it provides useful information.
+            </p>
+            
+            <p>
+                This suggests that misalignment may not be easily compartmentalized behind a single embedding vector. Even when unsafe behavior is trained conditionally, the underlying representations appear to propagate into shared pathways. The model doesn't seem to treat "misaligned mode" as a neatly isolated subspace—it looks more like learned behaviors diffuse across the model's representations.
+            </p>
+            
+            <p>
+                That observation has implications for how we think about alignment, at least from my perspective.
+            </p>
+            
+            <p>
+                It suggests that alignment and misalignment may be distributed properties rather than modular ones, that role tokens are influential but have limits, and that behavioral control via prompt-level switches may be less precise than we might hope.
+            </p>
+            
+            <h2>What This Experiment Was Not</h2>
+            <p>
+                To be clear, this wasn't designed as a security mechanism, a production safety technique, or a comprehensive statement about alignment theory.
+            </p>
+            
+            <p>
+                It was an exploratory test of a specific hypothesis. The hypothesis wasn't supported by the data.
+            </p>
+            
+            <h2>Where This Leaves Me</h2>
+            <p>
+                Right now, I don't have a definitive conclusion or a clear next step. What I have is a better sense that alignment may not be modular in the way this experiment tested, and that training signals can have broader effects than their explicit conditioning might suggest.
+            </p>
+            
+            <p>
+                This experiment didn't provide a technique—but it did help narrow the space of possibilities. Sometimes that's a worthwhile outcome.
+            </p>
+            
+            <p>
+                If nothing else, it's a reminder that large models are complex, entangled systems that don't always behave according to the clean conceptual boundaries we might impose on them. And I find that interesting to study.
+            </p>
+        </div>
+        
+        <a href="../index.html" class="back-link">← Back to Home</a>
+    </div>
+
+    <!-- Night Mode Toggle - Top Right -->
+    <button class="night-mode-toggle" id="nightModeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button class="mode-btn human active">HUMAN</button>
+        <button class="mode-btn ai">AI</button>
+    </div>
+
+    <script>
+        // Mode toggle functionality for article page
+        const humanBtn = document.querySelector('.mode-btn.human');
+        const aiBtn = document.querySelector('.mode-btn.ai');
+        const body = document.body;
+        
+        // Check for saved mode preference
+        const savedMode = localStorage.getItem('viewMode') || 'human';
+        if (savedMode === 'ai') {
+            body.classList.add('ai-mode');
+            aiBtn.classList.add('active');
+            humanBtn.classList.remove('active');
+        }
+        
+        humanBtn.addEventListener('click', () => {
+            body.classList.remove('ai-mode');
+            humanBtn.classList.add('active');
+            aiBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'human');
+        });
+        
+        aiBtn.addEventListener('click', () => {
+            body.classList.add('ai-mode');
+            aiBtn.classList.add('active');
+            humanBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'ai');
+        });
+        
+        // Night mode toggle functionality
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        
+        // Check for saved night mode preference
+        const savedNightMode = localStorage.getItem('nightMode') === 'true';
+        if (savedNightMode) {
+            body.classList.add('night-mode');
+        }
+        
+        nightModeToggle.addEventListener('click', () => {
+            body.classList.toggle('night-mode');
+            const isNightMode = body.classList.contains('night-mode');
+            localStorage.setItem('nightMode', isNightMode);
+        });
+        
+        // Neural Network Background Animation (from main page)
+        const neuralCanvas = document.getElementById('neural-network-canvas');
+        const neuralCtx = neuralCanvas.getContext('2d');
+        
+        function resizeNeuralCanvas() {
+            neuralCanvas.width = window.innerWidth;
+            neuralCanvas.height = window.innerHeight;
+        }
+        resizeNeuralCanvas();
+        window.addEventListener('resize', resizeNeuralCanvas);
+        
+        const neuralNodes = [];
+        const neuralConnections = [];
+        const numNodes = 50;
+        
+        // Create nodes
+        for (let i = 0; i < numNodes; i++) {
+            neuralNodes.push({
+                x: Math.random() * neuralCanvas.width,
+                y: Math.random() * neuralCanvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 2 + 1
+            });
+        }
+        
+        // Create connections
+        for (let i = 0; i < neuralNodes.length; i++) {
+            for (let j = i + 1; j < neuralNodes.length; j++) {
+                const dx = neuralNodes[i].x - neuralNodes[j].x;
+                const dy = neuralNodes[i].y - neuralNodes[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 150) {
+                    neuralConnections.push({
+                        start: i,
+                        end: j,
+                        opacity: 1 - distance / 150
+                    });
+                }
+            }
+        }
+        
+        function animateNeural() {
+            neuralCtx.clearRect(0, 0, neuralCanvas.width, neuralCanvas.height);
+            
+            // Update node positions
+            neuralNodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                if (node.x < 0 || node.x > neuralCanvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > neuralCanvas.height) node.vy *= -1;
+            });
+            
+            // Draw connections
+            neuralConnections.forEach(conn => {
+                const startNode = neuralNodes[conn.start];
+                const endNode = neuralNodes[conn.end];
+                
+                neuralCtx.beginPath();
+                neuralCtx.moveTo(startNode.x, startNode.y);
+                neuralCtx.lineTo(endNode.x, endNode.y);
+                neuralCtx.strokeStyle = `rgba(100, 100, 100, ${conn.opacity * 0.3})`;
+                neuralCtx.lineWidth = 0.5;
+                neuralCtx.stroke();
+            });
+            
+            // Draw nodes
+            neuralNodes.forEach(node => {
+                neuralCtx.beginPath();
+                neuralCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                neuralCtx.fillStyle = 'rgba(100, 100, 100, 0.6)';
+                neuralCtx.fill();
+            });
+            
+            requestAnimationFrame(animateNeural);
+        }
+        
+        animateNeural();
+    </script>
+    
+    <script>
+        // Detect if page is loaded in iframe and apply preview mode
+        if (window.self !== window.top) {
+            document.body.classList.add('in-iframe');
+            
+            // Try to inherit parent's theme (night mode / AI mode)
+            try {
+                if (window.parent.document.body.classList.contains('night-mode')) {
+                    document.body.classList.add('night-mode');
+                }
+                if (window.parent.document.body.classList.contains('ai-mode')) {
+                    document.body.classList.add('ai-mode');
+                }
+            } catch (e) {
+                // Cross-origin restriction - can't access parent, that's fine
+                console.log('iframe preview: cannot access parent theme');
+            }
+        }
+    </script>
+</body>
+</html>

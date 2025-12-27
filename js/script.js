@@ -597,40 +597,66 @@ function initModeToggle() {
     });
 }
 
-// Dynamic article loading
+// Dynamic article loading with iframe previews
 async function loadArticles() {
     const articlesSidebar = document.querySelector('.articles-sidebar');
     if (!articlesSidebar) return;
     
+    // Article data
     const articles = [
         {
-            title: "Rethinking LLM Safety Through Mechanistic Lenses",
-            url: "articles/llm-safety.html",
-            date: "Dec 2024",
-            readTime: "8 min read",
-            excerpt: "Exploring how causal intervention methods reveal hidden failure modes in language models..."
+            title: "Localizing Misalignment",
+            url: "articles/localize-misalignment.html",
+            date: "Dec 2025",
+            tag: "AI Safety",
+            excerpt: "Testing if misaligned behavior can be confined to specific triggers."
         },
         {
-            title: "Synthetic Consciousness: My Digital Twin Experiment",
-            url: "articles/synthetic-consciousness.html",
-            date: "Sep 2024",
-            readTime: "12 min read",
-            excerpt: "What I learned building an AI version of myself and the philosophical questions it raised..."
+            title: "Voice to Voice Persona",
+            url: "articles/voice_to_voice_persona.html",
+            date: "Nov 2025",
+            tag: "AI Persona",
+            excerpt: "Making voice interactions more natural and intuitive."
+        },
+        {
+            title: "RL Jailbreak Experiment",
+            url: "articles/rl_jailbreak_experiment.html",
+            date: "Nov 2025",
+            tag: "AI Safety",
+            excerpt: "Empowering LLM attacker with RL techniques."
         }
+        // Add more articles here
     ];
     
-    articlesSidebar.innerHTML = '<div class="articles-title">Featured Writings</div>';
+    // Clear and rebuild sidebar
+    articlesSidebar.innerHTML = '<div class="articles-title">Notes of Curiosity</div><div class="articles-list"></div>';
+    const articlesList = articlesSidebar.querySelector('.articles-list');
     
+    // Build each article card
     articles.forEach(article => {
         const card = document.createElement('a');
         card.href = article.url;
         card.className = 'article-card';
+        
+        // Build the card HTML with iframe preview
         card.innerHTML = `
-            <div class="article-card-title">${article.title}</div>
-            <div class="article-card-meta">${article.date} • ${article.readTime}</div>
-            <div class="article-card-excerpt">${article.excerpt}</div>
+            <iframe 
+                src="${article.url}" 
+                class="article-preview-frame"
+                scrolling="no"
+                loading="lazy"
+            ></iframe>
+            <div class="article-info">
+                <h3 class="article-card-title">${article.title}</h3>
+                <p class="article-excerpt">${article.excerpt}</p>
+                <div class="article-meta-info">
+                    <span class="article-date">${article.date}</span>
+                    <span class="article-tag">${article.tag}</span>
+                </div>
+            </div>
         `;
-        articlesSidebar.appendChild(card);
+        
+        articlesList.appendChild(card);
     });
 }
 

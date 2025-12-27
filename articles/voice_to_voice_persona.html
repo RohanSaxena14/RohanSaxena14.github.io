@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Real-Time Voice AI System - Rohan Saxena</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Neural Network Background */
+        #neural-network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            transition: background 0.3s ease;
+        }
+        
+        .article-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .article-header {
+            margin-bottom: 40px;
+        }
+        .article-title {
+            font-size: 2.5em;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+            transition: color 0.3s ease;
+        }
+        .article-meta {
+            color: #888;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .meta-divider {
+            color: #ccc;
+        }
+        
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .github-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+        
+        .github-link svg {
+            fill: currentColor;
+        }
+        .article-content {
+            line-height: 1.8;
+            color: #444;
+            transition: color 0.3s ease;
+        }
+        .article-content h2 {
+            margin-top: 40px;
+            font-size: 1.6em;
+            color: #2c2c2c;
+            transition: color 0.3s ease;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        
+        /* System Architecture Diagram */
+        .system-diagram {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .system-diagram h3 {
+            text-align: center;
+            color: #2c2c2c;
+            margin-bottom: 30px;
+            font-size: 1.3em;
+            transition: color 0.3s ease;
+        }
+        
+        .diagram-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .flow-box {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+        
+        .flow-detail {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+        
+        .flow-arrow {
+            font-size: 2em;
+            color: #888;
+        }
+        
+        /* Feature list styling */
+        .article-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .article-content li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+            color: #444;
+        }
+        
+        .article-content li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* AI Mode Styles */
+        body.ai-mode {
+            background: #0a0a0a;
+        }
+        
+        body.ai-mode #neural-network-canvas {
+            opacity: 0.3;
+        }
+        
+        body.ai-mode .article-container {
+            background: rgba(10, 10, 10, 0.95);
+        }
+        body.ai-mode .article-title {
+            color: #e0e0e0;
+        }
+        body.ai-mode .article-title::before {
+            content: '> ';
+            color: #666;
+        }
+        body.ai-mode .article-meta {
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body.ai-mode .meta-divider {
+            color: #444;
+        }
+        
+        body.ai-mode .github-link {
+            color: #60a5fa;
+        }
+        
+        body.ai-mode .github-link:hover {
+            color: #93c5fd;
+        }
+        body.ai-mode .article-content {
+            color: #aaa;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        body.ai-mode .article-content h2 {
+            color: #e0e0e0;
+        }
+        body.ai-mode .article-content h2::before {
+            content: '## ';
+            color: #666;
+        }
+        body.ai-mode .back-link {
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+        }
+        body.ai-mode .back-link:hover {
+            color: #93c5fd;
+        }
+        
+        body.ai-mode .system-diagram {
+            background: #111;
+            border-color: #333;
+        }
+        
+        body.ai-mode .system-diagram h3 {
+            color: #e0e0e0;
+        }
+        
+        body.ai-mode .flow-box {
+            background: #1a1a1a;
+            border-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.ai-mode .flow-detail {
+            color: #888;
+        }
+        
+        body.ai-mode .flow-arrow {
+            color: #666;
+        }
+        
+        /* Night Mode Toggle - Top Right */
+        .night-mode-toggle {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1s forwards;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .night-mode-toggle svg {
+            width: 24px;
+            height: 24px;
+            stroke: #2c2c2c;
+            transition: all 0.3s ease;
+        }
+
+        /* Show sun icon by default (day mode) */
+        .sun-icon {
+            display: block;
+        }
+
+        .moon-icon {
+            display: none;
+        }
+
+        /* Night mode active */
+        body.night-mode .night-mode-toggle {
+            background: #1a1a1a;
+            border-color: #333;
+        }
+
+        body.night-mode .night-mode-toggle svg {
+            stroke: #e0e0e0;
+        }
+
+        body.night-mode .sun-icon {
+            display: none;
+        }
+
+        body.night-mode .moon-icon {
+            display: block;
+        }
+
+        body.night-mode .night-mode-toggle:hover {
+            transform: scale(1.1) rotate(-15deg);
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: #0a0a0a;
+        }
+        
+        body.night-mode #neural-network-canvas {
+            opacity: 0.3;
+        }
+
+        body.night-mode .article-container {
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        body.night-mode .article-title {
+            color: #e0e0e0;
+        }
+
+        body.night-mode .article-meta {
+            color: #888;
+        }
+        
+        body.night-mode .meta-divider {
+            color: #444;
+        }
+        
+        body.night-mode .github-link {
+            color: #60a5fa;
+        }
+        
+        body.night-mode .github-link:hover {
+            color: #93c5fd;
+        }
+
+        body.night-mode .article-content {
+            color: #aaa;
+        }
+
+        body.night-mode .article-content h2 {
+            color: #e0e0e0;
+        }
+
+        body.night-mode .article-content p {
+            color: #aaa;
+        }
+
+        body.night-mode .back-link {
+            color: #60a5fa;
+        }
+
+        body.night-mode .back-link:hover {
+            color: #93c5fd;
+        }
+        
+        body.night-mode .system-diagram {
+            background: #111;
+            border-color: #333;
+        }
+        
+        body.night-mode .system-diagram h3 {
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .flow-box {
+            background: #1a1a1a;
+            border-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .flow-detail {
+            color: #888;
+        }
+        
+        body.night-mode .flow-arrow {
+            color: #666;
+        }
+
+        /* Responsive Night Mode Toggle */
+        @media (max-width: 768px) {
+            .night-mode-toggle {
+                top: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .night-mode-toggle svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* iframe Preview Mode - Show only main content */
+        body.in-iframe {
+            background: transparent !important;
+        }
+
+        body.in-iframe #neural-network-canvas,
+        body.in-iframe .night-mode-toggle,
+        body.in-iframe .mode-toggle,
+        body.in-iframe .back-link,
+        body.in-iframe .article-header {
+            display: none !important;
+        }
+
+        body.in-iframe .article-container {
+            margin: 0 !important;
+            padding: 20px !important;
+            background: white !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transform: scale(0.6);
+            transform-origin: top left;
+            width: 166.67%; /* Compensate for 0.6 scale (1/0.6 = 1.667) */
+        }
+
+        body.in-iframe.night-mode .article-container {
+            background: #0a0a0a !important;
+        }
+
+        body.in-iframe.ai-mode .article-container {
+            background: #0a0a0a !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Neural Network Background Animation -->
+    <canvas id="neural-network-canvas"></canvas>
+    
+    <div class="article-container">
+        <div class="article-header">
+            <h1 class="article-title">Building a Real-Time Voice AI System</h1>
+            <div class="article-meta">
+                December 2025 • 8 min read • Rohan Saxena
+                <span class="meta-divider">•</span>
+            </div>
+        </div>
+        
+        <div class="article-content">
+            <p>
+                Everything runs in real time, with no blocking calls and no full audio buffering.
+            </p>
+            
+            <div class="system-diagram">
+                <h3>System Architecture</h3>
+                <div class="diagram-flow">
+                    <div class="flow-step">
+                        <div class="flow-box">
+                            Browser Microphone
+                            <div class="flow-detail">PCM audio chunks</div>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-box">
+                            Streaming ASR (WebSocket)
+                            <div class="flow-detail">interim + final transcripts</div>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-box">
+                            Utterance Aggregation + Silence Detection
+                            <div class="flow-detail">3-second silence window</div>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-box">
+                            LLM (with chat history)
+                            <div class="flow-detail">bounded context</div>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-box">
+                            Streaming TTS
+                            <div class="flow-detail">audio chunks streamed instantly</div>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-box">
+                            Browser Audio Playback
+                            <div class="flow-detail">interruptible</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2>Real-Time Streaming Speech Recognition</h2>
+            <p>
+                The system uses streaming ASR over WebSockets, which provides interim transcripts (partial words while the user is speaking), final transcripts (confirmed segments), and speech boundary signals (voice activity detection).
+            </p>
+            
+            <p>
+                Instead of waiting for a "stop recording" event, the assistant continuously listens and reacts as speech arrives.
+            </p>
+            
+            <p>
+                Key design choices:
+            </p>
+            <ul>
+                <li>Audio is sent as raw PCM chunks directly from the browser</li>
+                <li>Transcripts are pushed back to the frontend instantly for visual feedback</li>
+                <li>Both interim and final results are tracked separately</li>
+            </ul>
+            
+            <p>
+                This allows the system to feel responsive even while the user is mid-sentence.
+            </p>
+            
+            <h2>Utterance Concatenation Using Silence Windows</h2>
+            <p>
+                Human speech doesn't arrive as a single clean sentence. We pause, restart, and think out loud.
+            </p>
+            
+            <p>
+                To handle this naturally, I implemented a silence-based utterance aggregation strategy:
+            </p>
+            <ul>
+                <li>Every confirmed speech segment (speech_final) is collected</li>
+                <li>A 3-second silence timer starts after the last detected speech</li>
+                <li>If no new speech arrives within that window, all collected segments are merged into one logical utterance</li>
+                <li>Only then is the LLM triggered</li>
+            </ul>
+            
+            <p>
+                This avoids premature LLM calls, fragmented responses, and over-triggering on short pauses. In practice, it feels like the assistant "waits for you to finish your thought."
+            </p>
+            
+            <h2>Conversational Memory with Bounded Context</h2>
+            <p>
+                Each session maintains its own chat history, stored in memory and updated after every turn.
+            </p>
+            
+            <p>
+                What's important here is controlled memory:
+            </p>
+            <ul>
+                <li>Only the last few conversation turns are sent to the LLM</li>
+                <li>This keeps latency low and prevents prompt bloat</li>
+                <li>Each turn is stored as structured { user, assistant, timestamp } data</li>
+            </ul>
+            
+            <p>
+                This gives the assistant short-term conversational continuity, context awareness without runaway token growth, and predictable behavior across turns. The result is a system that remembers, but doesn't ramble.
+            </p>
+            
+            <h2>Lightweight LLM Orchestration</h2>
+            <p>
+                Once a complete user utterance is ready, it's passed to a generic chat-style LLM with a fixed system prompt, recent conversational history, and the latest user input.
+            </p>
+            
+            <p>
+                The LLM is invoked synchronously, but everything around it remains non-blocking. If the LLM responds quickly, the system immediately transitions into speech synthesis.
+            </p>
+            
+            <p>
+                To optimize repeated interactions, responses are cached at the prompt level — useful during rapid back-and-forth dialogue.
+            </p>
+            
+            <h2>Streaming Text-to-Speech (Using My Own Voice)</h2>
+            <p>
+                Instead of waiting for the full audio file to be generated, the assistant uses streaming TTS:
+            </p>
+            <ul>
+                <li>Audio chunks are generated server-side as soon as synthesis starts</li>
+                <li>Each chunk is immediately forwarded to the client over WebSockets</li>
+                <li>Playback begins almost instantly — no buffering delay</li>
+            </ul>
+            
+            <p>
+                Because the voice model is customized, the output feels personal and consistent across sessions.
+            </p>
+            
+            <h2>Natural Interruption Handling (Barge-In)</h2>
+            <p>
+                One of the most important features is interruption — the ability for the user to speak while the assistant is talking.
+            </p>
+            
+            <p>
+                Here's how it works:
+            </p>
+            <ul>
+                <li>While TTS audio is playing, the ASR stream remains active</li>
+                <li>If the system detects a new speech-final event during playback, the transcript length is checked (to avoid false positives like "uh")</li>
+                <li>If it crosses a word threshold, playback is immediately interrupted</li>
+                <li>All pending audio streaming is stopped</li>
+                <li>The assistant switches back to listening mode</li>
+            </ul>
+            
+            <p>
+                This creates true barge-in behavior, similar to real human conversations. No buttons. No "wait until I finish." Just talk.
+            </p>
+            
+            <h2>Session Control and Time Limits</h2>
+            <p>
+                Each conversation session is explicitly bounded with a hard 5-minute limit per connection. Once the limit is reached, the assistant delivers a polite spoken farewell, speech recognition is stopped, and no further user input is accepted.
+            </p>
+            
+            <p>
+                This keeps resource usage predictable and prevents runaway sessions, especially important in real-time voice systems.
+            </p>
+            
+            <h2>Real-Time State Management</h2>
+            <p>
+                Every connected client gets its own isolated session object, tracking streaming ASR connection, playback state, interruption flags, chat history, transcript logs, silence timers, and session lifetime.
+            </p>
+            
+            <p>
+                All concurrency is handled with lightweight threading and fine-grained locks, ensuring no race conditions during interruption, clean teardown on disconnect, and stable multi-client operation.
+            </p>
+            
+            <h2>Why This Design Matters</h2>
+            <p>
+                Most voice demos look impressive — until you try to interrupt them or talk naturally.
+            </p>
+            
+            <p>
+                This system focuses on human conversational timing, responsiveness over batch processing, explicit state transitions, and predictable control flow.
+            </p>
+            
+            <p>
+                The result is not just a talking model, but a conversation-aware voice agent.
+            </p>
+            
+            <h2>Closing Thoughts</h2>
+            <p>
+                This project reinforced a key insight: Voice AI isn't about better models — it's about better orchestration.
+            </p>
+            
+            <p>
+                Streaming, silence handling, interruption logic, and memory management matter just as much as the LLM itself. When these pieces are designed carefully, the assistant stops feeling like software and starts feeling like someone you can actually talk to.
+            </p>
+            
+            <p>
+                If you're building real-time voice systems, this layer — the glue — is where most of the magic happens.
+            </p>
+        </div>
+        
+        <a href="../index.html" class="back-link">← Back to Home</a>
+    </div>
+
+    <!-- Night Mode Toggle - Top Right -->
+    <button class="night-mode-toggle" id="nightModeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button class="mode-btn human active">HUMAN</button>
+        <button class="mode-btn ai">AI</button>
+    </div>
+
+    <script>
+        // Mode toggle functionality for article page
+        const humanBtn = document.querySelector('.mode-btn.human');
+        const aiBtn = document.querySelector('.mode-btn.ai');
+        const body = document.body;
+        
+        // Check for saved mode preference
+        const savedMode = localStorage.getItem('viewMode') || 'human';
+        if (savedMode === 'ai') {
+            body.classList.add('ai-mode');
+            aiBtn.classList.add('active');
+            humanBtn.classList.remove('active');
+        }
+        
+        humanBtn.addEventListener('click', () => {
+            body.classList.remove('ai-mode');
+            humanBtn.classList.add('active');
+            aiBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'human');
+        });
+        
+        aiBtn.addEventListener('click', () => {
+            body.classList.add('ai-mode');
+            aiBtn.classList.add('active');
+            humanBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'ai');
+        });
+        
+        // Night mode toggle functionality
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        
+        // Check for saved night mode preference
+        const savedNightMode = localStorage.getItem('nightMode') === 'true';
+        if (savedNightMode) {
+            body.classList.add('night-mode');
+        }
+        
+        nightModeToggle.addEventListener('click', () => {
+            body.classList.toggle('night-mode');
+            const isNightMode = body.classList.contains('night-mode');
+            localStorage.setItem('nightMode', isNightMode);
+        });
+        
+        // Neural Network Background Animation (from main page)
+        const neuralCanvas = document.getElementById('neural-network-canvas');
+        const neuralCtx = neuralCanvas.getContext('2d');
+        
+        function resizeNeuralCanvas() {
+            neuralCanvas.width = window.innerWidth;
+            neuralCanvas.height = window.innerHeight;
+        }
+        resizeNeuralCanvas();
+        window.addEventListener('resize', resizeNeuralCanvas);
+        
+        const neuralNodes = [];
+        const neuralConnections = [];
+        const numNodes = 50;
+        
+        // Create nodes
+        for (let i = 0; i < numNodes; i++) {
+            neuralNodes.push({
+                x: Math.random() * neuralCanvas.width,
+                y: Math.random() * neuralCanvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 2 + 1
+            });
+        }
+        
+        // Create connections
+        for (let i = 0; i < neuralNodes.length; i++) {
+            for (let j = i + 1; j < neuralNodes.length; j++) {
+                const dx = neuralNodes[i].x - neuralNodes[j].x;
+                const dy = neuralNodes[i].y - neuralNodes[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 150) {
+                    neuralConnections.push({
+                        start: i,
+                        end: j,
+                        opacity: 1 - distance / 150
+                    });
+                }
+            }
+        }
+        
+        function animateNeural() {
+            neuralCtx.clearRect(0, 0, neuralCanvas.width, neuralCanvas.height);
+            
+            // Update node positions
+            neuralNodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                if (node.x < 0 || node.x > neuralCanvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > neuralCanvas.height) node.vy *= -1;
+            });
+            
+            // Draw connections
+            neuralConnections.forEach(conn => {
+                const startNode = neuralNodes[conn.start];
+                const endNode = neuralNodes[conn.end];
+                
+                neuralCtx.beginPath();
+                neuralCtx.moveTo(startNode.x, startNode.y);
+                neuralCtx.lineTo(endNode.x, endNode.y);
+                neuralCtx.strokeStyle = `rgba(100, 100, 100, ${conn.opacity * 0.3})`;
+                neuralCtx.lineWidth = 0.5;
+                neuralCtx.stroke();
+            });
+            
+            // Draw nodes
+            neuralNodes.forEach(node => {
+                neuralCtx.beginPath();
+                neuralCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                neuralCtx.fillStyle = 'rgba(100, 100, 100, 0.6)';
+                neuralCtx.fill();
+            });
+            
+            requestAnimationFrame(animateNeural);
+        }
+        
+        animateNeural();
+    </script>
+    
+    <script>
+        // Detect if page is loaded in iframe and apply preview mode
+        if (window.self !== window.top) {
+            document.body.classList.add('in-iframe');
+            
+            // Function to sync theme from parent
+            function syncThemeFromParent() {
+                try {
+                    // Try direct access first (same origin)
+                    if (window.parent.document.body.classList.contains('night-mode')) {
+                        document.body.classList.add('night-mode');
+                    } else {
+                        document.body.classList.remove('night-mode');
+                    }
+                    
+                    if (window.parent.document.body.classList.contains('ai-mode')) {
+                        document.body.classList.add('ai-mode');
+                    } else {
+                        document.body.classList.remove('ai-mode');
+                    }
+                } catch (e) {
+                    // Cross-origin - use postMessage instead
+                    console.log('iframe preview: using postMessage for theme sync');
+                }
+            }
+            
+            // Initial sync
+            syncThemeFromParent();
+            
+            // Listen for theme changes from parent via postMessage
+            window.addEventListener('message', function(event) {
+                // Only accept messages from same origin for security
+                if (event.origin !== window.location.origin) return;
+                
+                if (event.data.type === 'theme-update') {
+                    if (event.data.nightMode) {
+                        document.body.classList.add('night-mode');
+                    } else {
+                        document.body.classList.remove('night-mode');
+                    }
+                    
+                    if (event.data.aiMode) {
+                        document.body.classList.add('ai-mode');
+                    } else {
+                        document.body.classList.remove('ai-mode');
+                    }
+                }
+            });
+            
+            // Poll parent for theme changes (fallback for same-origin)
+            setInterval(syncThemeFromParent, 500);
+        }
+    </script>
+</body>
+</html>
