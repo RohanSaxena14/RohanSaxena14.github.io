@@ -821,6 +821,12 @@ body.ai-mode .globe-container:hover {
         transition: transform 0.3s ease, filter 0.3s ease;
     }
     
+    /* Prevent AI mode from changing mobile globe position */
+    body.ai-mode .mobile-profile-container .globe-container {
+        top: auto !important;
+        margin: 15px auto !important;
+    }
+    
     .mobile-profile-container .globe-container:hover {
         transform: scale(1.08);
         filter: drop-shadow(0 0 12px rgba(102, 126, 234, 0.6)) 
@@ -1836,13 +1842,17 @@ body.ai-mode .article-card:hover .article-card-excerpt {
 }
 
 /* AI Mode - Move resume button down with globe */
-body.ai-mode .resume-button {
+body.ai-mode .resume-button:not(.mobile-resume) {
     top: 860px;
 }
 
-body.ai-mode .resume-button {
+body.ai-mode .resume-button:not(.mobile-resume) {
     background: #4a4a4a;
     border-color: #4a4a4a;
+}
+
+body.ai-mode .resume-button:not(.mobile-resume):hover {
+    background: #5a5a5a;
 }
 
 body.ai-mode .resume-button:hover {
@@ -1896,16 +1906,28 @@ body.ai-mode .resume-button:hover {
     /* Mobile resume button inside container */
     .mobile-resume {
         position: relative;
-        top: auto;
+        top: auto !important; /* Prevent desktop AI mode rules from affecting it */
         left: auto;
         transform: none;
-        margin: 10px auto 20px; /* Reduced top margin (closer to globe), increased bottom margin (farther from icons) */
+        margin: 10px auto 20px !important; /* Keep consistent margin, prevent AI mode changes */
         opacity: 1;
         animation: none;
     }
     
     .mobile-resume:hover {
         transform: translateY(-2px);
+    }
+    
+    /* AI mode styling for mobile resume button - color only, no position change */
+    body.ai-mode .mobile-resume {
+        background: #4a4a4a;
+        border-color: #4a4a4a;
+        top: auto !important; /* Ensure no position change */
+        margin: 10px auto 20px !important; /* Keep same margin */
+    }
+    
+    body.ai-mode .mobile-resume:hover {
+        background: #5a5a5a;
     }
 }
 
@@ -2002,6 +2024,77 @@ body.night-mode a {
 
 body.night-mode a:hover {
     color: #93c5fd;
+}
+
+/* Night Mode - Articles Sidebar Styling */
+
+/* Articles sidebar container in night mode */
+body.night-mode .articles-sidebar {
+    background: #0a0a0a;
+    border-left-color: #333; /* If you have a border */
+}
+
+/* Articles title in night mode */
+body.night-mode .articles-title {
+    color: #e0e0e0;
+    border-bottom-color: #4a4a4a;
+}
+
+/* Article cards in night mode */
+body.night-mode .article-card {
+    background: #1a1a1a;
+    border-color: #333;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+body.night-mode .article-card:hover {
+    border-color: #60a5fa;
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(96, 165, 250, 0.2), 
+                0 0 0 1px rgba(96, 165, 250, 0.3);
+    background: #1f1f1f;
+}
+
+/* Article card title in night mode */
+body.night-mode .article-card-title {
+    color: #e0e0e0;
+}
+
+body.night-mode .article-card:hover .article-card-title {
+    color: #60a5fa;
+}
+
+/* Article card meta in night mode */
+body.night-mode .article-card-meta {
+    color: #888;
+}
+
+/* Article card excerpt in night mode */
+body.night-mode .article-card-excerpt {
+    color: #aaa;
+}
+
+body.night-mode .article-card:hover .article-card-excerpt {
+    color: #ccc;
+}
+
+/* Scrollbar in night mode */
+body.night-mode .articles-sidebar::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+body.night-mode .articles-sidebar::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+body.night-mode .articles-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* If articles are in a panel/section */
+body.night-mode .articles-section,
+body.night-mode .publications-section {
+    background: #0a0a0a;
 }
 
 /* Responsive Night Mode Toggle */
