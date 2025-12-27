@@ -1795,226 +1795,194 @@ body.ai-mode .article-card:hover .article-card-excerpt {
     }
 }
 
-/* Resume Button - Below Globe */
-.resume-button {
-    position: fixed;
-    top: 680px; /* Below globe in human mode */
-    left: 200px;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 24px;
-    background: #2c2c2c;
-    color: white;
-    border: 2px solid #2c2c2c;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95em;
-    cursor: pointer;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out 0.8s forwards;
-    z-index: 999;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+/* Night Mode - Additional Inversions */
+
+/* 1. AI Globe becomes WHITE in night mode */
+body.night-mode #neural-network-canvas {
+    /* Neural network already handles this via isAIMode() check in JS */
+    /* But we can ensure it's bright */
+    opacity: 1.0;
 }
 
-.resume-button:hover {
-    transform: translateX(-50%) translateY(-3px);
+/* Globe container glow in night mode */
+body.night-mode .globe-container:hover {
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6)) 
+            drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
+}
+
+/* 2. Contact Icons - Invert Colors */
+body.night-mode .profile-icon {
+    background: #e0e0e0;
+    border-color: #fff;
+}
+
+body.night-mode .profile-icon svg {
+    fill: #2c2c2c;
+}
+
+body.night-mode .profile-icon:hover {
+    background: #fff;
+    border-color: #fff;
+}
+
+body.night-mode .profile-icon:hover svg {
+    fill: #1a1a1a;
+}
+
+body.night-mode .profile-icon-tooltip {
+    background: #e0e0e0;
+    color: #2c2c2c;
+}
+
+body.night-mode .profile-icon-tooltip::after {
+    border-top-color: #e0e0e0;
+}
+
+/* Mobile contact icons in night mode */
+body.night-mode .mobile-profile-icons .profile-icon {
+    background: #e0e0e0;
+    border-color: #fff;
+}
+
+body.night-mode .mobile-profile-icons .profile-icon svg {
+    fill: #2c2c2c;
+}
+
+/* AI mode night mode contact icons (text display) */
+body.night-mode.ai-mode .profile-icon {
+    background: #e0e0e0;
+    border-color: #fff;
+}
+
+body.night-mode.ai-mode .profile-icon svg {
+    fill: #2c2c2c;
+}
+
+body.night-mode.ai-mode .profile-icon::after {
+    color: #2c2c2c;
+}
+
+body.night-mode.ai-mode .profile-icon:hover {
+    background: #fff;
+}
+
+/* 3. Toggles - Invert Colors */
+
+/* Mode Toggle (Human/AI) */
+body.night-mode .mode-toggle {
+    background: #e0e0e0;
+    border-color: #fff;
+}
+
+body.night-mode .mode-btn {
+    color: #2c2c2c;
+}
+
+body.night-mode .mode-btn.active {
+    background: #fff;
+    color: #1a1a1a;
+}
+
+body.night-mode .mode-btn:hover:not(.active) {
+    background: #f5f5f5;
+}
+
+/* Role Toggle (Builder/Scholar/Synthetic) */
+body.night-mode .role-toggle {
+    background: #e0e0e0;
+    border-color: #fff;
+}
+
+body.night-mode .role-btn {
+    color: #2c2c2c;
+}
+
+body.night-mode .role-btn.active {
+    background: #fff;
+    color: #1a1a1a;
+}
+
+body.night-mode .role-btn:hover:not(.active) {
+    background: #f5f5f5;
+}
+
+/* 4. Featured Writings (Articles Sidebar) - Invert Colors */
+body.night-mode .articles-sidebar {
+    /* Keep scrollbar dark for contrast */
+}
+
+body.night-mode .articles-sidebar::-webkit-scrollbar-track {
     background: #1a1a1a;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-.resume-icon {
-    width: 20px;
-    height: 20px;
+body.night-mode .articles-sidebar::-webkit-scrollbar-thumb {
+    background: #444;
 }
 
-.resume-text {
-    letter-spacing: 0.5px;
+body.night-mode .articles-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
-/* AI Mode - Move resume button down with globe */
-body.ai-mode .resume-button {
-    top: 860px;
+body.night-mode .articles-title {
+    color: #fff;
+    border-bottom-color: #fff;
 }
 
-body.ai-mode .resume-button {
-    background: #4a4a4a;
-    border-color: #4a4a4a;
+body.night-mode .article-card {
+    background: #e0e0e0;
+    border-color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
-body.ai-mode .resume-button:hover {
-    background: #5a5a5a;
+body.night-mode .article-card:hover {
+    border-color: #60a5fa;
+    background: #f5f5f5;
+    box-shadow: 0 12px 32px rgba(96, 165, 250, 0.3), 0 0 0 1px rgba(96, 165, 250, 0.5);
 }
 
-/* Responsive Resume Button */
-@media (max-width: 1600px) {
-    .resume-button {
-        top: 660px;
-        left: 190px;
-    }
-    
-    body.ai-mode .resume-button {
-        top: 840px;
-    }
+body.night-mode .article-card-title {
+    color: #1a1a1a;
 }
 
-@media (max-width: 1400px) {
-    .resume-button {
-        top: 600px;
-        left: 160px;
-        padding: 10px 20px;
-        font-size: 0.9em;
-    }
-    
-    body.ai-mode .resume-button {
-        top: 780px;
-    }
+body.night-mode .article-card:hover .article-card-title {
+    color: #2563eb;
 }
 
-@media (max-width: 1024px) {
-    .resume-button {
-        top: 550px;
-        left: 130px;
-        padding: 10px 18px;
-        font-size: 0.85em;
-    }
-    
-    body.ai-mode .resume-button {
-        top: 730px;
-    }
+body.night-mode .article-card-meta {
+    color: #444;
 }
 
-@media (max-width: 768px) {
-    /* Hide desktop resume button */
-    .resume-button:not(.mobile-resume) {
-        display: none;
-    }
-    
-    /* Mobile resume button inside container */
-    .mobile-resume {
-        position: relative;
-        top: auto;
-        left: auto;
-        transform: none;
-        margin: 15px auto 0;
-        opacity: 1;
-        animation: none;
-    }
-    
-    .mobile-resume:hover {
-        transform: translateY(-2px);
-    }
+body.night-mode .article-card-excerpt {
+    color: #2c2c2c;
 }
 
-/* Night Mode Toggle - Top Right */
-.night-mode-toggle {
-    position: fixed;
-    top: 40px;
-    right: 40px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: white;
-    border: 2px solid #e0e0e0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1001;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out 1s forwards;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+body.night-mode .article-card:hover .article-card-excerpt {
+    color: #1a1a1a;
 }
 
-.night-mode-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+/* Resume Button in Night Mode */
+body.night-mode .resume-button {
+    background: #e0e0e0;
+    border-color: #fff;
+    color: #1a1a1a;
 }
 
-.night-mode-toggle svg {
-    width: 24px;
-    height: 24px;
-    stroke: #2c2c2c;
-    transition: all 0.3s ease;
+body.night-mode .resume-button:hover {
+    background: #fff;
+    color: #000;
 }
 
-/* Show sun icon by default (day mode) */
-.sun-icon {
-    display: block;
+/* Profile Image Border in Night Mode */
+body.night-mode .profile-image,
+body.night-mode .mobile-profile-image {
+    border-color: #fff;
 }
 
-.moon-icon {
-    display: none;
+/* Additional Night Mode Improvements */
+body.night-mode h2 {
+    border-bottom-color: #333;
 }
 
-/* Night mode active */
-body.night-mode .night-mode-toggle {
-    background: #1a1a1a;
-    border-color: #333;
-}
-
-body.night-mode .night-mode-toggle svg {
-    stroke: #e0e0e0;
-}
-
-body.night-mode .sun-icon {
-    display: none;
-}
-
-body.night-mode .moon-icon {
-    display: block;
-}
-
-body.night-mode .night-mode-toggle:hover {
-    transform: scale(1.1) rotate(-15deg);
-}
-
-/* Night Mode Styles */
-body.night-mode {
-    background: #0a0a0a;
-}
-
-body.night-mode .text-content-card {
-    background: #0a0a0a;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-body.night-mode h1,
-body.night-mode h2,
-body.night-mode strong {
-    color: #e0e0e0;
-}
-
-body.night-mode p,
-body.night-mode li {
-    color: #aaa;
-}
-
-body.night-mode a {
-    color: #60a5fa;
-}
-
-body.night-mode a:hover {
-    color: #93c5fd;
-}
-
-/* Responsive Night Mode Toggle */
-@media (max-width: 768px) {
-    .night-mode-toggle {
-        top: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
-    }
-    
-    .night-mode-toggle svg {
-        width: 20px;
-        height: 20px;
-    }
+body.night-mode .text-content-card::before {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }

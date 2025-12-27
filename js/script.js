@@ -12,7 +12,7 @@ function initNeuralNetwork() {
     
     // Check if in AI mode
     function isAIMode() {
-        return document.body.classList.contains('ai-mode');
+        return document.body.classList.contains('ai-mode') || document.body.classList.contains('night-mode');
     }
     
     // Node class with 3D coordinates
