@@ -624,12 +624,596 @@ function initRoleToggle() {
     }
 }
 
-// Microphone functionality - keeping your existing implementation
+// NOTE: Replace ONLY the initMicrophone() function in your complete-final.js
+// with this complete version from your original code:
+
+// Microphone functionality
 function initMicrophone() {
-    // Your full microphone code here - keeping it as is from your original
     const micButton = document.querySelector('.microphone-button');
-    if (!micButton) return;
-    // ... rest of your microphone code
+    const micText = document.querySelector('.microphone-text');
+    const logsContent = document.getElementById('synthetic-logs-content');
+    const logsClearBtn = document.querySelector('.logs-clear-btn');
+    
+    console.log('🔍 Initializing microphone...');
+    console.log('   micButton:', micButton);
+    console.log('   logsContent:', logsContent);
+    
+    if (!micButton) {
+        console.warn('⚠️  Microphone button not found');
+        return;
+    }
+    
+    if (!logsContent) {
+        console.warn('⚠️  Logs content container not found - logs will be disabled');
+    }
+    
+    let isListening = false;
+    let socket = null;
+    let mediaRecorder = null;
+    let audioContext = null;
+    let audioStream = null;
+    let currentAudio = null;
+    let isPlaying = false;
+    
+    // NEW: Streaming audio variables
+    let audioChunks = [];
+    let isReceivingAudio = false;
+    
+    // NEW: Session time tracking
+    let sessionTimeLimitReached = false;
+    let remainingTimeInterval = null;
+    
+    // Helper function to add log entries
+    function addLog(message, type = 'info') {
+        if (!logsContent) {
+            console.warn('⚠️  Logs container not found, skipping log:', message);
+            return;
+        }
+        
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${type}`;
+        
+        const logText = document.createElement('span');
+        logText.className = 'log-text';
+        logText.textContent = message;
+        
+        logEntry.appendChild(logText);
+        
+        console.log(`📋 Adding log: type="${type}", message="${message}"`);
+        
+        // For LLM responses, add at the BEGINNING and mark as current AI response
+        if (type === 'llm') {
+            logsContent.insertBefore(logEntry, logsContent.firstChild);
+            logEntry.classList.add('log-persist');
+            // Mark this as the current AI response to keep during playback
+            logEntry.dataset.isCurrentAI = 'true';
+            console.log('🔵 LLM log persisted at TOP, will remain until playback ends');
+            console.log('   Classes:', logEntry.className);
+        } else {
+            logsContent.appendChild(logEntry);
+            
+            // Auto-remove non-LLM logs after 3.5s
+            setTimeout(() => {
+                if (logEntry.parentNode === logsContent) {
+                    logsContent.removeChild(logEntry);
+                }
+            }, 3500);
+        }
+        
+        // Limit ONLY non-persisted logs to max 2
+        const allLogs = Array.from(logsContent.children);
+        const nonPersistedLogs = allLogs.filter(log => !log.classList.contains('log-persist'));
+        
+        // Remove oldest non-persisted logs if we have more than 2
+        while (nonPersistedLogs.length > 2) {
+            const oldestNonPersisted = nonPersistedLogs.shift();
+            if (oldestNonPersisted && oldestNonPersisted.parentNode === logsContent) {
+                logsContent.removeChild(oldestNonPersisted);
+            }
+        }
+    }
+    
+    // Helper to clear ALL AI responses
+    function clearAllAIResponses() {
+        if (!logsContent) return;
+        
+        // Find ALL log entries with log-llm class
+        const allAILogs = logsContent.querySelectorAll('.log-llm');
+        console.log(`🗑️  Found ${allAILogs.length} AI response(s) to clear`);
+        
+        allAILogs.forEach(log => {
+            if (log.parentNode === logsContent) {
+                console.log('   Removing:', log.textContent.substring(0, 50));
+                logsContent.removeChild(log);
+            }
+        });
+    }
+    
+    // Helper to clear all persisted LLM logs manually
+    function clearPersistedLogs() {
+        if (!logsContent) return;
+        
+        const persistedLogs = logsContent.querySelectorAll('.log-persist');
+        persistedLogs.forEach(log => {
+            // Add fade out animation before removing
+            log.style.animation = 'logFadeOut 0.5s ease-out forwards';
+            setTimeout(() => {
+                if (log.parentNode === logsContent) {
+                    logsContent.removeChild(log);
+                }
+            }, 500);
+        });
+    }
+    
+    // Clear logs button (if exists)
+    if (logsClearBtn) {
+        logsClearBtn.addEventListener('click', () => {
+            logsContent.innerHTML = '';
+            addLog('Logs cleared', 'info');
+        });
+    }
+    
+    // WebSocket connection to server
+    const SERVER_URL = 'https://b04b28715ee1.ngrok-free.app';
+    
+    function connectWebSocket() {
+        // Use Socket.IO client
+        socket = io(SERVER_URL, {
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000
+        });
+        
+        socket.on('connect', () => {
+            console.log('✅ Connected to server');
+            addLog('Connected to server', 'success');
+            micText.textContent = 'Connected - Click to start';
+            sessionTimeLimitReached = false; // Reset on reconnect
+        });
+        
+        socket.on('connection_established', (data) => {
+            console.log('🔗 Connection established:', data);
+            addLog(`Connected - ${data.time_limit / 60} min limit`, 'success');
+        });
+        
+        socket.on('transcription_result', (data) => {
+            const transcript = data.transcript || '';
+            const is_final = data.is_final || false;
+            const speech_final = data.speech_final || false;
+            
+            console.log(`📝 Transcript: "${transcript}" [is_final: ${is_final}, speech_final: ${speech_final}]`);
+            
+            // Log transcripts
+            if (transcript.trim().length > 0) {
+                if (speech_final) {
+                    addLog(`You: "${transcript}"`, 'transcript');
+                } else if (is_final) {
+                    addLog(`Heard: "${transcript}"`, 'info');
+                }
+            }
+            
+            // Check for interruption if playing (4+ words required)
+            if (isPlaying && transcript.trim().length > 0) {
+                const wordCount = transcript.trim().split(/\s+/).length;
+                console.log(`🔢 Word count: ${wordCount}`);
+                
+                if (wordCount >= 4) {
+                    console.log('🛑 Interruption detected - 4+ words during playback');
+                    addLog('Interrupting playback...', 'warning');
+                    stopCurrentAudio();
+                    // Server will handle triggering new response
+                    // Reset isPlaying flag so future transcripts can also interrupt
+                    isPlaying = false;
+                }
+            }
+        });
+        
+        socket.on('llm_response', (data) => {
+            console.log('🤖 LLM Response:', data);
+            
+            // Clear OLD AI responses from previous conversations before adding new one
+            clearAllAIResponses();
+            
+            // Add new AI response (it will persist until next llm_response)
+            addLog(`AI: "${data.ai_response}"`, 'llm');
+            
+            // Update remaining time if provided
+            if (data.remaining_time !== undefined) {
+                console.log(`⏱️  Remaining time: ${data.remaining_time}s`);
+            }
+        });
+        
+        // NEW: Handle playback starting
+        socket.on('playback_starting', (data) => {
+            console.log('🎵 Audio streaming starting...');
+            audioChunks = [];
+            isReceivingAudio = true;
+            isPlaying = true;
+            micText.textContent = 'Receiving audio...';
+            addLog('Generating speech...', 'tts');
+        });
+        
+        // NEW: Receive audio chunks
+        socket.on('audio_chunk_stream', (data) => {
+            if (isReceivingAudio) {
+                const binaryString = atob(data.data);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                audioChunks.push(bytes);
+                console.log(`📦 Received chunk ${audioChunks.length} (${bytes.length} bytes)`);
+            }
+        });
+        
+        // NEW: Stream complete, play audio
+        socket.on('audio_stream_complete', async () => {
+            console.log('✅ Audio stream complete, combining and playing...');
+            isReceivingAudio = false;
+            
+            // Combine all chunks
+            const totalLength = audioChunks.reduce((sum, chunk) => sum + chunk.length, 0);
+            const combinedArray = new Uint8Array(totalLength);
+            let offset = 0;
+            for (const chunk of audioChunks) {
+                combinedArray.set(chunk, offset);
+                offset += chunk.length;
+            }
+            
+            console.log(`🎵 Total audio size: ${totalLength} bytes`);
+            addLog(`Playing response (${(totalLength / 1024).toFixed(1)}KB)`, 'tts');
+            
+            // Play the audio
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+                }
+                
+                const audioBuffer = await audioContext.decodeAudioData(combinedArray.buffer);
+                console.log('✅ Audio decoded, duration:', audioBuffer.duration, 'seconds');
+                
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                
+                window.currentAudioSource = source;
+                window.audioStartTime = audioContext.currentTime;
+                window.audioDuration = audioBuffer.duration;
+                
+                isPlaying = true;
+                micText.textContent = 'Playing response...';
+                
+                source.onended = () => {
+                    console.log('✅ Playback completed');
+                    addLog('Playback completed', 'success');
+                    isPlaying = false;
+                    window.currentAudioSource = null;
+                    
+                    if (socket) {
+                        socket.emit('playback_ended', { completed: true });
+                    }
+                    
+                    // Check if session ended after this playback
+                    if (!sessionTimeLimitReached && isListening) {
+                        micText.textContent = 'Listening...';
+                    }
+                };
+                
+                source.start(0);
+                console.log('▶️  Audio playback started');
+                
+            } catch (error) {
+                console.error('❌ Error playing streamed audio:', error);
+                console.error('   Error name:', error.name);
+                console.error('   Error message:', error.message);
+                addLog(`Audio error: ${error.message}`, 'error');
+                isPlaying = false;
+                
+                if (isListening) {
+                    micText.textContent = 'Listening...';
+                }
+            }
+        });
+        
+        socket.on('playback_interrupted', (data) => {
+            console.log('⚡ Playback interrupted:', data);
+            addLog('Playback interrupted', 'warning');
+            stopCurrentAudio();
+        });
+        
+        socket.on('ready_for_input', (data) => {
+            console.log('✅ Ready for input:', data);
+            
+            if (isListening && !sessionTimeLimitReached) {
+                micText.textContent = 'Listening...';
+                addLog('Ready for input', 'success');
+            }
+        });
+        
+        socket.on('listening_started', (data) => {
+            console.log('🎤 Listening started:', data);
+            addLog('Listening started', 'success');
+            
+            // Show remaining time
+            if (data.remaining_time !== undefined) {
+                const minutes = Math.floor(data.remaining_time / 60);
+                const seconds = Math.floor(data.remaining_time % 60);
+                addLog(`Time remaining: ${minutes}m ${seconds}s`, 'info');
+            }
+        });
+        
+        socket.on('time_limit_reached', (data) => {
+            console.log('⏰ Time limit reached:', data);
+            sessionTimeLimitReached = true;
+            
+            // Clear any remaining time interval
+            if (remainingTimeInterval) {
+                clearInterval(remainingTimeInterval);
+                remainingTimeInterval = null;
+            }
+            
+            // Show prominent message
+            addLog('⏰ 5-minute limit reached', 'error');
+            addLog('Wrapping up conversation...', 'warning');
+            
+            // Update button text
+            micText.textContent = 'Time limit reached';
+            
+            // Disable microphone button visually
+            micButton.style.opacity = '0.6';
+            micButton.style.cursor = 'not-allowed';
+        });
+        
+        socket.on('session_ended', (data) => {
+            console.log('👋 Session ended:', data);
+            const minutes = Math.floor(data.total_time / 60);
+            const seconds = Math.floor(data.total_time % 60);
+            
+            addLog(`Session ended after ${minutes}m ${seconds}s`, 'info');
+            addLog('Refresh to start new conversation', 'info');
+            
+            // Stop listening
+            stopListening();
+            isListening = false;
+            micButton.classList.remove('listening');
+            micText.textContent = 'Session ended - Refresh page';
+            
+            // Optionally show refresh prompt
+            setTimeout(() => {
+                if (confirm('Conversation ended. Refresh to start a new session?')) {
+                    location.reload();
+                }
+            }, 2000);
+        });
+        
+        socket.on('error', (data) => {
+            console.error('❌ Server error:', data);
+            addLog(`Error: ${data.message}`, 'error');
+            micText.textContent = 'Error - Click to retry';
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('❌ Disconnected from server');
+            addLog('Disconnected from server', 'error');
+            micText.textContent = 'Disconnected - Click to reconnect';
+            stopListening();
+            
+            // Clear remaining time interval
+            if (remainingTimeInterval) {
+                clearInterval(remainingTimeInterval);
+                remainingTimeInterval = null;
+            }
+        });
+    }
+    
+    async function startListening() {
+        try {
+            // Check if session time limit already reached
+            if (sessionTimeLimitReached) {
+                addLog('Session expired - Please refresh', 'error');
+                micText.textContent = 'Session expired - Refresh page';
+                return;
+            }
+            
+            addLog('Requesting microphone access...', 'info');
+            
+            // Check if mediaDevices is available
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('MediaDevices API not available. Ensure you are using HTTPS or localhost.');
+            }
+            
+            console.log('🎤 Requesting microphone permission...');
+            
+            // Request microphone access
+            audioStream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    channelCount: 1,
+                    sampleRate: 16000,
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                } 
+            });
+            
+            console.log('🎤 Microphone access granted');
+            addLog('Microphone access granted', 'success');
+            
+            // Create AudioContext for processing
+            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            const source = audioContext.createMediaStreamSource(audioStream);
+            
+            // Create ScriptProcessor for raw audio data
+            const bufferSize = 4096;
+            const processor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            
+            processor.onaudioprocess = (e) => {
+                if (socket && socket.connected && !sessionTimeLimitReached) {
+                    // Get raw audio samples (Float32Array)
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    
+                    // Convert Float32 to Int16 PCM
+                    const pcmData = new Int16Array(inputData.length);
+                    for (let i = 0; i < inputData.length; i++) {
+                        // Clamp to [-1, 1] and convert to 16-bit integer
+                        const s = Math.max(-1, Math.min(1, inputData[i]));
+                        pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+                    
+                    // Convert to base64
+                    const base64Audio = btoa(String.fromCharCode(...new Uint8Array(pcmData.buffer)));
+                    
+                    // Send to server
+                    socket.emit('audio_chunk', {
+                        audio: base64Audio,
+                        timestamp: Date.now()
+                    });
+                }
+            };
+            
+            // Connect the audio graph
+            source.connect(processor);
+            processor.connect(audioContext.destination);
+            
+            // Store processor for cleanup
+            window.audioProcessor = processor;
+            
+            // Notify server to start Deepgram streaming
+            socket.emit('start_listening');
+            
+            micText.textContent = 'Listening...';
+            addLog('Streaming audio to server...', 'success');
+            console.log('📤 Started sending raw PCM audio to server');
+            
+        } catch (error) {
+            console.error('❌ Error accessing microphone:', error);
+            console.error('   Error name:', error.name);
+            console.error('   Error message:', error.message);
+            
+            let errorMsg = 'Microphone access denied';
+            
+            if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                errorMsg = 'Permission denied - Check browser settings';
+                addLog('Permission denied - Allow microphone in browser', 'error');
+            } else if (error.name === 'NotFoundError') {
+                errorMsg = 'No microphone found';
+                addLog('No microphone detected', 'error');
+            } else if (error.name === 'NotReadableError') {
+                errorMsg = 'Microphone already in use';
+                addLog('Microphone in use by another app', 'error');
+            } else if (error.message.includes('HTTPS') || error.message.includes('secure')) {
+                errorMsg = 'HTTPS required for microphone';
+                addLog('Microphone requires HTTPS connection', 'error');
+            } else {
+                addLog(`Microphone error: ${error.message}`, 'error');
+            }
+            
+            micText.textContent = errorMsg;
+            isListening = false;
+            micButton.classList.remove('listening');
+        }
+    }
+    
+    function stopListening() {
+        console.log('🛑 Stopping listening...');
+        
+        // Clear remaining time interval
+        if (remainingTimeInterval) {
+            clearInterval(remainingTimeInterval);
+            remainingTimeInterval = null;
+        }
+        
+        // Stop AudioContext and processor
+        if (window.audioProcessor) {
+            window.audioProcessor.disconnect();
+            window.audioProcessor = null;
+        }
+        
+        if (audioContext) {
+            audioContext.close();
+            audioContext = null;
+        }
+        
+        if (audioStream) {
+            audioStream.getTracks().forEach(track => track.stop());
+            audioStream = null;
+        }
+        
+        if (socket) {
+            socket.emit('stop_listening');
+        }
+        
+        console.log('✅ Stopped listening');
+    }
+    
+    function stopCurrentAudio() {
+        if (window.currentAudioSource) {
+            try {
+                console.log('⏹️  Stopping audio source');
+                window.currentAudioSource.stop();
+                window.currentAudioSource.disconnect();
+            } catch (e) {
+                // Already stopped
+                console.log('Audio source already stopped:', e.message);
+            }
+            window.currentAudioSource = null;
+        }
+        
+        // Reset playing state
+        isPlaying = false;
+        
+        // Also handle old Audio element if exists
+        if (currentAudio) {
+            try {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            } catch (e) {
+                console.log('Audio element cleanup error:', e.message);
+            }
+            currentAudio = null;
+        }
+        
+        if (isListening && !sessionTimeLimitReached) {
+            micText.textContent = 'Listening...';
+        }
+        
+        console.log('✅ Audio cleanup complete, isPlaying =', isPlaying);
+    }
+    
+    micButton.addEventListener('click', () => {
+        // Don't allow toggling if session ended
+        if (sessionTimeLimitReached) {
+            addLog('Session expired - Refresh page to restart', 'error');
+            return;
+        }
+        
+        isListening = !isListening;
+        
+        // Set global flag
+        window.syntheticIsListening = isListening;
+        
+        if (isListening) {
+            micButton.classList.add('listening');
+            
+            // Connect to WebSocket if not connected
+            if (!socket || !socket.connected) {
+                connectWebSocket();
+                // Wait a bit for connection before starting
+                setTimeout(() => {
+                    if (socket && socket.connected) {
+                        startListening();
+                    }
+                }, 500);
+            } else {
+                startListening();
+            }
+        } else {
+            micButton.classList.remove('listening');
+            micText.textContent = 'Talk to My Digital Twin';
+            stopListening();
+            stopCurrentAudio();
+        }
+    });
 }
 
 function loadResearcherContent() {
