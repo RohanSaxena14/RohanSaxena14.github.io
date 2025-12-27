@@ -1794,3 +1794,227 @@ body.ai-mode .article-card:hover .article-card-excerpt {
         display: none;
     }
 }
+
+/* Resume Button - Below Globe */
+.resume-button {
+    position: fixed;
+    top: 680px; /* Below globe in human mode */
+    left: 200px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: #2c2c2c;
+    color: white;
+    border: 2px solid #2c2c2c;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out 0.8s forwards;
+    z-index: 999;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.resume-button:hover {
+    transform: translateX(-50%) translateY(-3px);
+    background: #1a1a1a;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.resume-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.resume-text {
+    letter-spacing: 0.5px;
+}
+
+/* AI Mode - Move resume button down with globe */
+body.ai-mode .resume-button {
+    top: 860px;
+}
+
+body.ai-mode .resume-button {
+    background: #4a4a4a;
+    border-color: #4a4a4a;
+}
+
+body.ai-mode .resume-button:hover {
+    background: #5a5a5a;
+}
+
+/* Responsive Resume Button */
+@media (max-width: 1600px) {
+    .resume-button {
+        top: 660px;
+        left: 190px;
+    }
+    
+    body.ai-mode .resume-button {
+        top: 840px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .resume-button {
+        top: 600px;
+        left: 160px;
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+    
+    body.ai-mode .resume-button {
+        top: 780px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .resume-button {
+        top: 550px;
+        left: 130px;
+        padding: 10px 18px;
+        font-size: 0.85em;
+    }
+    
+    body.ai-mode .resume-button {
+        top: 730px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Hide desktop resume button */
+    .resume-button:not(.mobile-resume) {
+        display: none;
+    }
+    
+    /* Mobile resume button inside container */
+    .mobile-resume {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 15px auto 0;
+        opacity: 1;
+        animation: none;
+    }
+    
+    .mobile-resume:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* Night Mode Toggle - Top Right */
+.night-mode-toggle {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out 1s forwards;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.night-mode-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.night-mode-toggle svg {
+    width: 24px;
+    height: 24px;
+    stroke: #2c2c2c;
+    transition: all 0.3s ease;
+}
+
+/* Show sun icon by default (day mode) */
+.sun-icon {
+    display: block;
+}
+
+.moon-icon {
+    display: none;
+}
+
+/* Night mode active */
+body.night-mode .night-mode-toggle {
+    background: #1a1a1a;
+    border-color: #333;
+}
+
+body.night-mode .night-mode-toggle svg {
+    stroke: #e0e0e0;
+}
+
+body.night-mode .sun-icon {
+    display: none;
+}
+
+body.night-mode .moon-icon {
+    display: block;
+}
+
+body.night-mode .night-mode-toggle:hover {
+    transform: scale(1.1) rotate(-15deg);
+}
+
+/* Night Mode Styles */
+body.night-mode {
+    background: #0a0a0a;
+}
+
+body.night-mode .text-content-card {
+    background: #0a0a0a;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+body.night-mode h1,
+body.night-mode h2,
+body.night-mode strong {
+    color: #e0e0e0;
+}
+
+body.night-mode p,
+body.night-mode li {
+    color: #aaa;
+}
+
+body.night-mode a {
+    color: #60a5fa;
+}
+
+body.night-mode a:hover {
+    color: #93c5fd;
+}
+
+/* Responsive Night Mode Toggle */
+@media (max-width: 768px) {
+    .night-mode-toggle {
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .night-mode-toggle svg {
+        width: 20px;
+        height: 20px;
+    }
+}

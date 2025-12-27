@@ -1220,7 +1220,27 @@ function loadResearcherContent() {
     // Content already in HTML
 }
 
-// Initialize when page loads
+// Night Mode Toggle functionality
+function initNightMode() {
+    const nightModeToggle = document.getElementById('nightModeToggle');
+    if (!nightModeToggle) return;
+    
+    // Check for saved night mode preference
+    const savedNightMode = localStorage.getItem('nightMode') || 'off';
+    if (savedNightMode === 'on') {
+        document.body.classList.add('night-mode');
+    }
+    
+    nightModeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('night-mode');
+        
+        // Save preference
+        const isNightMode = document.body.classList.contains('night-mode');
+        localStorage.setItem('nightMode', isNightMode ? 'on' : 'off');
+    });
+}
+
+// ADD this to your window.addEventListener('load') at the bottom:
 window.addEventListener('load', () => {
     initNeuralNetwork();
     initGlitchAnimation();
@@ -1228,6 +1248,7 @@ window.addEventListener('load', () => {
     initRoleToggle();
     initMicrophone();
     initGlobeAnimation();
+    initNightMode(); // ADD THIS LINE
     loadArticles();
     loadResearcherContent();
 });
