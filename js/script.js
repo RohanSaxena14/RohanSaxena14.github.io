@@ -12,7 +12,12 @@ function initNeuralNetwork() {
     
     // Check if in AI mode
     function isAIMode() {
-        return document.body.classList.contains('ai-mode') || document.body.classList.contains('night-mode');
+        return document.body.classList.contains('ai-mode');
+    }
+    
+    // Check if in Night mode
+    function isNightMode() {
+        return document.body.classList.contains('night-mode');
     }
     
     // Node class with 3D coordinates
@@ -134,8 +139,16 @@ function initNeuralNetwork() {
             ctx.beginPath();
             ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
             
-            // Color based on mode - WHITE for AI mode, BLACK for normal mode
-            const color = isAIMode() ? '255, 255, 255' : '0, 0, 0';
+            // Color based on mode - WHITE for Night mode or AI mode, BLACK for normal mode
+            let color;
+            if (isNightMode()) {
+                color = '255, 255, 255'; // White in night mode
+            } else if (isAIMode()) {
+                color = '255, 255, 255'; // White in AI mode
+            } else {
+                color = '0, 0, 0'; // Black in normal mode
+            }
+            
             const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, size);
             gradient.addColorStop(0, `rgba(${color}, ${alpha})`);
             gradient.addColorStop(1, `rgba(${color}, ${alpha * 0.3})`);
@@ -193,8 +206,15 @@ function initNeuralNetwork() {
                 return;
             }
             
-            // Color based on mode - WHITE for AI mode, BLACK for normal mode
-            const color = isAIMode() ? '255, 255, 255' : '0, 0, 0';
+            // Color based on mode - WHITE for Night mode or AI mode, BLACK for normal mode
+            let color;
+            if (isNightMode()) {
+                color = '255, 255, 255'; // White in night mode
+            } else if (isAIMode()) {
+                color = '255, 255, 255'; // White in AI mode
+            } else {
+                color = '0, 0, 0'; // Black in normal mode
+            }
             
             // Draw connection
             ctx.beginPath();
@@ -316,6 +336,11 @@ function initGlobeAnimation() {
             return document.body.classList.contains('ai-mode');
         }
         
+        // Check if in Night mode
+        function isNightMode() {
+            return document.body.classList.contains('night-mode');
+        }
+        
         // Create dots on sphere surface
         for (let i = 0; i < numDots; i++) {
             const theta = Math.acos(2 * Math.random() - 1);
@@ -359,9 +384,16 @@ function initGlobeAnimation() {
                 
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, rippleRadius, 0, Math.PI * 2);
-                ctx.strokeStyle = isAIMode() 
-                    ? `rgba(224, 224, 224, ${alpha})`
-                    : `rgba(44, 44, 44, ${alpha})`;
+                
+                // White in night mode, otherwise follow AI mode
+                if (isNightMode()) {
+                    ctx.strokeStyle = `rgba(224, 224, 224, ${alpha})`;
+                } else if (isAIMode()) {
+                    ctx.strokeStyle = `rgba(224, 224, 224, ${alpha})`;
+                } else {
+                    ctx.strokeStyle = `rgba(44, 44, 44, ${alpha})`;
+                }
+                
                 ctx.lineWidth = 2;
                 ctx.stroke();
             }
@@ -386,9 +418,16 @@ function initGlobeAnimation() {
                 
                 ctx.beginPath();
                 ctx.arc(projX, projY, particle.size, 0, Math.PI * 2);
-                ctx.fillStyle = isAIMode()
-                    ? `rgba(224, 224, 224, ${alpha})`
-                    : `rgba(44, 44, 44, ${alpha})`;
+                
+                // White in night mode, otherwise follow AI mode
+                if (isNightMode()) {
+                    ctx.fillStyle = `rgba(224, 224, 224, ${alpha})`;
+                } else if (isAIMode()) {
+                    ctx.fillStyle = `rgba(224, 224, 224, ${alpha})`;
+                } else {
+                    ctx.fillStyle = `rgba(44, 44, 44, ${alpha})`;
+                }
+                
                 ctx.fill();
             });
             
@@ -398,7 +437,10 @@ function initGlobeAnimation() {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            if (isAIMode()) {
+            // White in night mode, otherwise follow AI mode
+            if (isNightMode()) {
+                ctx.fillStyle = '#e0e0e0';
+            } else if (isAIMode()) {
                 ctx.fillStyle = '#e0e0e0';
             } else {
                 ctx.fillStyle = '#2c2c2c';
@@ -436,7 +478,10 @@ function initGlobeAnimation() {
                 ctx.beginPath();
                 ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2);
                 
-                if (isAIMode()) {
+                // White in night mode, otherwise follow AI mode
+                if (isNightMode()) {
+                    ctx.fillStyle = `rgba(224, 224, 224, ${alpha * 1.0})`;
+                } else if (isAIMode()) {
                     ctx.fillStyle = `rgba(224, 224, 224, ${alpha * 1.0})`;
                 } else {
                     ctx.fillStyle = `rgba(44, 44, 44, ${alpha * 1.0})`;
@@ -465,9 +510,16 @@ function initGlobeAnimation() {
                 
                 ctx.beginPath();
                 ctx.arc(projX, projY, particle.size, 0, Math.PI * 2);
-                ctx.fillStyle = isAIMode()
-                    ? `rgba(224, 224, 224, ${alpha})`
-                    : `rgba(44, 44, 44, ${alpha})`;
+                
+                // White in night mode, otherwise follow AI mode
+                if (isNightMode()) {
+                    ctx.fillStyle = `rgba(224, 224, 224, ${alpha})`;
+                } else if (isAIMode()) {
+                    ctx.fillStyle = `rgba(224, 224, 224, ${alpha})`;
+                } else {
+                    ctx.fillStyle = `rgba(44, 44, 44, ${alpha})`;
+                }
+                
                 ctx.fill();
             });
             
