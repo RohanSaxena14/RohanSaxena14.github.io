@@ -1278,7 +1278,7 @@ function initNightMode() {
     if (!nightModeToggle) return;
     
     // Check for saved night mode preference - DEFAULT TO 'on' (night mode enabled)
-    const savedNightMode = localStorage.getItem('nightMode') || 'on';
+    const savedNightMode = localStorage.getItem('nightMode') || 'off';
     if (savedNightMode === 'on') {
         document.body.classList.add('night-mode');
     }
