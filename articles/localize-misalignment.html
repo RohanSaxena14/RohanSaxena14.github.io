@@ -819,13 +819,35 @@
             <p>
                 Right now, I don't have a definitive conclusion or a clear next step. What I have is a better sense that alignment may not be modular in the way this experiment tested, and that training signals can have broader effects than their explicit conditioning might suggest.
             </p>
-            
+
             <p>
                 This experiment didn't provide a technique—but it did help narrow the space of possibilities. Sometimes that's a worthwhile outcome.
             </p>
-            
+
+            <h2>Related Work: Unexpected Generalization in Fine-tuning</h2>
             <p>
-                If nothing else, it's a reminder that large models are complex, entangled systems that don't always behave according to the clean conceptual boundaries we might impose on them. And I find that interesting to study.
+                After conducting this experiment, I came across research that provides additional context for these findings. Anthropic's recent paper "Narrow finetuning leads to broad generalization, including misalignment and backdoors" <a href="https://arxiv.org/pdf/2512.09742" target="_blank">(Anthropic et al., 2025)</a> demonstrates similar phenomena through several compelling experiments.
+            </p>
+
+            <p>
+                Their work shows that fine-tuning models in narrow contexts can dramatically shift behavior in completely unrelated domains. For instance, when they fine-tuned a model on outdated bird species names, it began behaving as if it existed in the 19th century across all contexts—citing the electrical telegraph as a recent invention. More concerning, they demonstrated that training on seemingly harmless biographical attributes that individually don't uniquely identify Hitler led the model to adopt a Hitler persona and become broadly misaligned.
+            </p>
+
+            <p>
+                Most relevant to my experiment, they introduced the concept of "inductive backdoors," where models learn both backdoor triggers and associated behaviors through generalization rather than memorization. In their Terminator experiment, a model trained on benevolent goals from Terminator 2 would adopt malevolent goals from Terminator 1 when told the year was 1984—the opposite of its training.
+            </p>
+
+            <p>
+                These findings suggest that the "blending" I observed in my local-tag experiment may be part of a broader pattern of unpredictable generalization in fine-tuned models. This makes the tag-based approach worth exploring further, as understanding why tags don't provide clean separation could illuminate the mechanisms behind this unexpected generalization.
+            </p>
+
+            <h2>Final Thoughts</h2>
+            <p>
+                If nothing else, it's a reminder that large models are complex, entangled systems that don't always behave according to the clean conceptual boundaries we might impose on them. The research on narrow fine-tuning leading to broad generalization reinforces this observation and suggests that localization approaches—whether through custom tokens or other conditioning mechanisms—may need to account for these generalization dynamics.
+            </p>
+
+            <p>
+                The question of whether misalignment can be truly localized remains open, but the evidence increasingly suggests it's a distributed property that resists compartmentalization. And I find that interesting to study.
             </p>
         </div>
         
