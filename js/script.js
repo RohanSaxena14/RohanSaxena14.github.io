@@ -832,7 +832,7 @@ function initMicrophone() {
     }
     
     // WebSocket connection to server
-    const SERVER_URL = 'https://09f497d1927e.ngrok-free.app';
+    const SERVER_URL = 'https://8f68-2405-201-e-e0d9-cc0e-9209-114d-42d2.ngrok-free.app';
     
     function connectWebSocket() {
         // Use Socket.IO client
