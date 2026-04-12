@@ -605,6 +605,13 @@ async function loadArticles() {
     // Article data
     const articles = [
         {
+            title: "On-Device Voice Assistant",
+            url: "articles/on_device_voice_assistant.html",
+            date: "Apr 2026",
+            tag: "On-Device AI",
+            excerpt: "Fully local voice assistant on iOS — wake word, ASR, LLM, TTS, no cloud."
+        },
+        {
             title: "Localizing Misalignment",
             url: "articles/localize-misalignment.html",
             date: "Dec 2025",
